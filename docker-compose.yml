@@ -1,0 +1,24 @@
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - FLARESOLVERR_URL=http://flaresolverr:8191
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      flaresolverr:
+        condition: service_started
+        required: false
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    ports:
+      - "8191:8191"
+    environment:
+      - LOG_LEVEL=warn
+      - DISABLE_MEDIA=true
+    profiles:
+      - flaresolverr

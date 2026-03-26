@@ -1,0 +1,29 @@
+# Environment — contains secrets, never commit
+.env
+
+# Runtime database
+data/
+
+# Compiled binaries
+bin/
+dotaticketwatch
+cmd/bot/bot
+cmd/check/check
+
+# Go test artifacts
+*.test
+*.out
+coverage.html
+
+# macOS
+.DS_Store
+
+# JetBrains IDEs
+.idea/
+
+# VS Code
+.vscode/
+
+# Project planning and Claude artifacts
+PLAN.md
+.claude/
