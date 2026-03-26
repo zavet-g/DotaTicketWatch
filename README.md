@@ -78,6 +78,10 @@ fallback: regex по raw HTML если `__NEXT_DATA__` вдруг исчезне
 
 ## П О Ч Е М У  Т А К
 
+<img src="assets/why.svg" width="100%"/>
+
+&nbsp;
+
 ```
 Go           — статический бинарь, 15MB docker образ, нет рантайм зависимостей
 bbolt        — embedded kv хранилище. без postgres, без redis. просто файл.
@@ -105,6 +109,10 @@ headless Chrome для JS-челленджей. AXS использует Next.js
 
 ## З А П У С К
 
+<img src="assets/launch.svg" width="100%"/>
+
+&nbsp;
+
 ```bash
 cp .env.example .env
 # заполни TELEGRAM_BOT_TOKEN и ADMIN_CHAT_ID
@@ -127,20 +135,19 @@ docker compose --profile flaresolverr up -d
 | `FLARESOLVERR_URL` | `http://localhost:8191` | опционально |
 | `DB_PATH` | `./data/bot.db` | переживает рестарты |
 
+---
+
 &nbsp;
 
-```
-/start    подписаться
-/stop     отписаться
-/check    проверить вручную          (admin)
-/status   статус системы             (admin)
-```
+## П У Л Ь Т  У П Р А В Л Е Н И Я
 
-admin команды видны только тебе — scoped через `setMyCommands` по chat_id.
+<img src="assets/commands.svg" width="100%"/>
 
 ---
 
 &nbsp;
+
+## Р О Д О С Л О В Н А Я
 
 <img src="assets/tree.svg" width="100%"/>
 
@@ -150,10 +157,6 @@ admin команды видны только тебе — scoped через `set
 
 <div align="center">
 
-<sub>Shanghai · Oriental Sports Center · Aug 2026</sub>
-
-&nbsp;
-
-![footer](https://capsule-render.vercel.app/api?type=venom&color=000000&height=120&section=footer)
+<img src="assets/footer.svg" width="100%"/>
 
 </div>

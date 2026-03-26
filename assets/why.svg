@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 175" width="900" height="175">
+
+  <rect width="900" height="175" fill="#000"/>
+
+  <defs>
+    <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
+      <rect width="900" height="1" fill="rgba(255,255,255,0.022)"/>
+    </pattern>
+    <style>
+      .hd  { animation: why-hd 12s linear infinite }
+      .r1  { animation: why1  12s linear infinite }
+      .r2  { animation: why2  12s linear infinite }
+      .r3  { animation: why3  12s linear infinite }
+      .r4  { animation: why4  12s linear infinite }
+      .rb  { animation: why-rb 12s linear infinite }
+
+      @keyframes why-hd { 0%,2%  { opacity:0 } 6%,68%  { opacity:1 } 76%,100% { opacity:0 } }
+      @keyframes why1   { 0%,10% { opacity:0 } 14%,68% { opacity:1 } 76%,100% { opacity:0 } }
+      @keyframes why2   { 0%,24% { opacity:0 } 28%,68% { opacity:1 } 76%,100% { opacity:0 } }
+      @keyframes why3   { 0%,38% { opacity:0 } 42%,68% { opacity:1 } 76%,100% { opacity:0 } }
+      @keyframes why4   { 0%,52% { opacity:0 } 56%,68% { opacity:1 } 76%,100% { opacity:0 } }
+      @keyframes why-rb { 0%,56% { opacity:0 } 60%,68% { opacity:1 } 76%,100% { opacity:0 } }
+    </style>
+  </defs>
+
+  <rect width="900" height="175" fill="url(#scan)"/>
+
+  <!-- header -->
+  <line class="hd" x1="20" y1="20" x2="880" y2="20" stroke="#181818" stroke-width="1"/>
+  <text class="hd" x="30"  y="36" font-family="monospace" font-size="10" fill="#2e2e2e" letter-spacing="3">СТЕК</text>
+  <text class="hd" x="200" y="36" font-family="monospace" font-size="10" fill="#2e2e2e" letter-spacing="3">РЕШЕНИЕ</text>
+  <line class="hd" x1="20" y1="44" x2="880" y2="44" stroke="#181818" stroke-width="1"/>
+
+  <!-- column divider -->
+  <line class="hd" x1="185" y1="44" x2="185" y2="156" stroke="#121212" stroke-width="1"/>
+
+  <!-- go -->
+  <text class="r1" x="30"  y="66" font-family="monospace" font-size="11" fill="#555">go</text>
+  <text class="r1" x="200" y="66" font-family="monospace" font-size="11" fill="#3a3a3a">статический бинарь · 15MB · FROM scratch · stdlib 90%</text>
+
+  <!-- bbolt -->
+  <text class="r2" x="30"  y="92" font-family="monospace" font-size="11" fill="#555">bbolt</text>
+  <text class="r2" x="200" y="92" font-family="monospace" font-size="11" fill="#3a3a3a">embedded kv · без postgres · без redis · просто файл</text>
+
+  <!-- tls-client -->
+  <text class="r3" x="30"  y="118" font-family="monospace" font-size="11" fill="#555">tls-client</text>
+  <text class="r3" x="200" y="118" font-family="monospace" font-size="11" fill="#3a3a3a">chrome 120 fingerprint · cloudflare bot score: 0</text>
+
+  <!-- flaresolverr -->
+  <text class="r4" x="30"  y="144" font-family="monospace" font-size="11" fill="#555">flaresolverr</text>
+  <text class="r4" x="200" y="144" font-family="monospace" font-size="11" fill="#3a3a3a">headless chrome · js-челленджи · последний эшелон</text>
+
+  <!-- bottom border -->
+  <line class="rb" x1="20" y1="156" x2="880" y2="156" stroke="#181818" stroke-width="1"/>
+
+</svg>

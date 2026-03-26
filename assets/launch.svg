@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 148" width="900" height="148">
+
+  <rect width="900" height="148" fill="#000"/>
+
+  <defs>
+    <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
+      <rect width="900" height="1" fill="rgba(255,255,255,0.022)"/>
+    </pattern>
+    <style>
+      .l1  { animation: s1 10s linear infinite }
+      .l2  { animation: s2 10s linear infinite }
+      .l3  { animation: s3 10s linear infinite }
+      .l4  { animation: s4 10s linear infinite }
+      .sp  { animation: s5 10s linear infinite }
+      .l6  { animation: s6 10s linear infinite }
+      .l7  { animation: s7 10s linear infinite }
+      .cur { animation: bl 0.85s step-end infinite }
+
+      @keyframes s1 { 0%,3%  { opacity:0 } 8%,64%  { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s2 { 0%,13% { opacity:0 } 18%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s3 { 0%,23% { opacity:0 } 28%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s4 { 0%,31% { opacity:0 } 36%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s5 { 0%,40% { opacity:0 } 44%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s6 { 0%,45% { opacity:0 } 50%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s7 { 0%,53% { opacity:0 } 58%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes bl { 50% { opacity:0 } }
+    </style>
+  </defs>
+
+  <rect width="900" height="148" fill="url(#scan)"/>
+
+  <!-- left edge mark -->
+  <line x1="32" y1="14" x2="32" y2="134" stroke="#111" stroke-width="1"/>
+
+  <text class="l1" x="46" y="32"  font-family="monospace" font-size="12" fill="#3c3c3c">$  cp .env.example .env</text>
+  <text class="l2" x="46" y="52"  font-family="monospace" font-size="12" fill="#3c3c3c">$  docker compose up -d</text>
+  <text class="l3" x="46" y="72"  font-family="monospace" font-size="12" fill="#3c3c3c">   ·  bbolt-data        created</text>
+  <text class="l4" x="46" y="92"  font-family="monospace" font-size="12" fill="#3c3c3c">   ·  dota-bot          started</text>
+  <text class="sp" x="46" y="107" font-family="monospace" font-size="11" fill="#222">─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─</text>
+  <text class="l6" x="46" y="120" font-family="monospace" font-size="12" fill="#888">▸  3 containers up  ·  watching</text>
+  <text class="l7" x="46" y="138" font-family="monospace" font-size="12" fill="#777">·  tls chrome 120  ·  bbolt ready  ·  telegram ok</text>
+
+  <text class="cur" x="46" y="138" font-family="monospace" font-size="12" fill="#2a2a2a">▮</text>
+
+</svg>
