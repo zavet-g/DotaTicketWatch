@@ -1,58 +1,164 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" width="900" height="200">
-  <!-- base -->
-  <rect width="900" height="200" fill="#000000"/>
 
-  <!-- scanline texture -->
+  <rect width="900" height="200" fill="#000"/>
+
   <defs>
+    <!-- scanline texture -->
     <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
-      <rect width="900" height="1" y="0" fill="rgba(255,255,255,0.028)"/>
+      <rect width="900" height="1" fill="rgba(255,255,255,0.025)"/>
     </pattern>
+
+    <style>
+      /* ── typing reveal: clip from right, 20s loop ── */
+      .title-wrap {
+        animation: type-reveal 20s linear infinite;
+      }
+      @keyframes type-reveal {
+        0%,4%  { clip-path: inset(0 100% 0 0); opacity: 1; }
+        18%    { clip-path: inset(0 0%   0 0); opacity: 1; }
+        72%    { clip-path: inset(0 0%   0 0); opacity: 1; }
+        78%    { clip-path: inset(0 0%   0 0); opacity: 0; }
+        100%   { clip-path: inset(0 100% 0 0); opacity: 0; }
+      }
+
+      /* ── ghost glitch: flicker after title fully appears ── */
+      .ghost-l { animation: gl 20s linear infinite; }
+      .ghost-r { animation: gr 20s linear infinite; }
+      @keyframes gl {
+        0%,18%,28%,100% { opacity: 0; }
+        19% { opacity: 0.18; }
+        20% { opacity: 0;    }
+        22% { opacity: 0.12; }
+        23% { opacity: 0;    }
+        25% { opacity: 0.08; }
+        26% { opacity: 0;    }
+      }
+      @keyframes gr {
+        0%,18%,28%,100% { opacity: 0; }
+        19.5% { opacity: 0.14; }
+        20.5% { opacity: 0;    }
+        23.5% { opacity: 0.10; }
+        24.5% { opacity: 0;    }
+        26.5% { opacity: 0.06; }
+        27%   { opacity: 0;    }
+      }
+
+      /* ── scan sweep line ── */
+      .sweep {
+        animation: sweep 20s linear infinite;
+      }
+      @keyframes sweep {
+        0%,4%  { transform: translateY(0px);   opacity: 0.18; }
+        18%    { transform: translateY(200px);  opacity: 0.18; }
+        19%    { opacity: 0; }
+        100%   { opacity: 0; }
+      }
+
+      /* ── cursor: appears after typing, blinks ── */
+      .cur {
+        animation: cur-appear 20s linear infinite, blink 0.9s step-end infinite;
+      }
+      @keyframes cur-appear {
+        0%,18%  { opacity: 0; }
+        20%     { opacity: 1; }
+        72%     { opacity: 1; }
+        78%     { opacity: 0; }
+        100%    { opacity: 0; }
+      }
+      @keyframes blink { 50% { opacity: 0; } }
+
+      /* ── subtitle + divider ── */
+      .sub {
+        animation: sub-in 20s linear infinite;
+      }
+      @keyframes sub-in {
+        0%,20%  { opacity: 0; }
+        24%     { opacity: 1; }
+        72%     { opacity: 1; }
+        78%     { opacity: 0; }
+        100%    { opacity: 0; }
+      }
+
+      /* ── corner marks ── */
+      .corner {
+        animation: corner-in 20s linear infinite;
+      }
+      @keyframes corner-in {
+        0%,22%  { opacity: 0; }
+        26%     { opacity: 1; }
+        72%     { opacity: 1; }
+        78%     { opacity: 0; }
+        100%    { opacity: 0; }
+      }
+    </style>
   </defs>
+
+  <!-- scanlines -->
   <rect width="900" height="200" fill="url(#scan)"/>
 
-  <!-- top edge accent -->
-  <line x1="0" y1="0" x2="900" y2="0" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- top + bottom edge -->
+  <line x1="0" y1="0"   x2="900" y2="0"   stroke="#151515" stroke-width="2"/>
+  <line x1="0" y1="199" x2="900" y2="199" stroke="#151515" stroke-width="1"/>
 
-  <!-- left + right margin marks -->
-  <line x1="60" y1="30" x2="60" y2="170" stroke="#111111" stroke-width="1"/>
-  <line x1="840" y1="30" x2="840" y2="170" stroke="#111111" stroke-width="1"/>
+  <!-- sweep scan line -->
+  <rect class="sweep" x="0" y="0" width="900" height="1" fill="rgba(255,255,255,0.9)"/>
 
-  <!-- main title -->
-  <text x="450" y="96"
+  <!-- ghost L (offset left 4px) -->
+  <text class="ghost-l"
+    x="446" y="96"
     text-anchor="middle"
-    font-family="'Courier New', Courier, monospace"
-    font-size="50"
+    font-family="monospace"
+    font-size="52"
     font-weight="900"
     fill="#ffffff"
-    letter-spacing="9">
-    DOTATICKETWATCH
-  </text>
+    letter-spacing="8">DOTATICKETWATCH</text>
 
-  <!-- blinking cursor -->
-  <style>
-    .cur { animation: blink 1.1s step-end infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
-  </style>
-  <text x="851" y="96"
-    font-family="'Courier New', Courier, monospace"
-    font-size="50"
-    font-weight="900"
-    fill="#333333"
-    class="cur">▮</text>
-
-  <!-- divider -->
-  <line x1="80" y1="118" x2="820" y2="118" stroke="#1e1e1e" stroke-width="1"/>
-
-  <!-- subtitle -->
-  <text x="450" y="148"
+  <!-- ghost R (offset right 4px) -->
+  <text class="ghost-r"
+    x="454" y="96"
     text-anchor="middle"
-    font-family="'Courier New', Courier, monospace"
-    font-size="11"
-    fill="#444444"
-    letter-spacing="5">
-    TI  2026  ·  SHANGHAI  ·  ORIENTAL SPORTS CENTER  ·  AUG 2026
-  </text>
+    font-family="monospace"
+    font-size="52"
+    font-weight="900"
+    fill="#ffffff"
+    letter-spacing="8">DOTATICKETWATCH</text>
 
-  <!-- bottom edge accent -->
-  <line x1="0" y1="199" x2="900" y2="199" stroke="#111111" stroke-width="1"/>
+  <!-- main title with typing clip reveal -->
+  <g class="title-wrap">
+    <text
+      x="450" y="96"
+      text-anchor="middle"
+      font-family="monospace"
+      font-size="52"
+      font-weight="900"
+      fill="#ffffff"
+      letter-spacing="8">DOTATICKETWATCH</text>
+  </g>
+
+  <!-- blinking cursor (appears after typing) -->
+  <text class="cur"
+    x="745" y="96"
+    font-family="monospace"
+    font-size="52"
+    font-weight="900"
+    fill="#2a2a2a">▮</text>
+
+  <!-- divider + subtitle -->
+  <g class="sub">
+    <line x1="80" y1="118" x2="820" y2="118" stroke="#1c1c1c" stroke-width="1"/>
+    <text
+      x="450" y="148"
+      text-anchor="middle"
+      font-family="monospace"
+      font-size="11"
+      fill="#3a3a3a"
+      letter-spacing="5">TI  2026  ·  SHANGHAI  ·  ORIENTAL SPORTS CENTER  ·  AUG 2026</text>
+  </g>
+
+  <!-- corner technical marks -->
+  <text class="corner" x="20"  y="186" font-family="monospace" font-size="9" fill="#161616">0,0</text>
+  <text class="corner" x="844" y="186" font-family="monospace" font-size="9" fill="#161616">900×200</text>
+  <text class="corner" x="20"  y="18"  font-family="monospace" font-size="9" fill="#161616">go · bbolt · tls</text>
+  <text class="corner" x="802" y="18"  font-family="monospace" font-size="9" fill="#161616">v1 · 2026</text>
+
 </svg>
