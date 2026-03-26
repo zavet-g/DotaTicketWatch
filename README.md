@@ -23,11 +23,7 @@
 
 &nbsp;
 
-<div align="center">
-
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Space+Mono&size=12&duration=1400&pause=500&color=2d2d2d&center=true&vCenter=true&width=560&lines=%5Baxs%5D+performerEventsData+%C2%B7+0+events;%5Baxs%5D+teamUpcoming+%C2%B7+none;%5Bsteam%5D+10+items+%C2%B7+no+match;%C2%B7+all+clear+%C2%B7+27.03+%C2%B7+23%3A14%3A08;%E2%94%80+%E2%94%80+%E2%94%80+%E2%94%80+%E2%94%80+%E2%94%80+%E2%94%80+%E2%94%80+%E2%94%80;%E2%96%B8+%5Baxs%5D+new+event+detected+%C2%B7+5872310;%E2%96%B8+notified+2+subscribers)](https://github.com/zavet-g/DotaTicketWatch)
-
-</div>
+<img src="assets/terminal.svg" width="100%"/>
 
 ---
 
