@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 215" width="900" height="215">
+
+  <!-- background -->
+  <rect width="900" height="215" fill="#000"/>
+
+  <!-- scanlines -->
+  <defs>
+    <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
+      <rect width="900" height="1" fill="rgba(255,255,255,0.022)"/>
+    </pattern>
+    <marker id="a1" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#2e2e2e"/>
+    </marker>
+    <marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#666"/>
+    </marker>
+  </defs>
+  <rect width="900" height="215" fill="url(#scan)"/>
+
+  <!-- ═══ AXS BLOCK ═══ -->
+  <rect x="20" y="15" width="360" height="132" fill="none" stroke="#1d1d1d" stroke-width="1"/>
+
+  <!-- header -->
+  <text x="30" y="32" font-family="monospace" font-size="10" fill="#3a3a3a" letter-spacing="3">AXS.COM · __NEXT_DATA__</text>
+  <line x1="20" y1="38" x2="380" y2="38" stroke="#181818" stroke-width="1"/>
+
+  <!-- 3 JSON sources -->
+  <text x="30" y="56" font-family="monospace" font-size="11" fill="#686868">performerEventsData.eventItems[]</text>
+  <text x="30" y="73" font-family="monospace" font-size="11" fill="#686868">teamUpcomingEventData.upcomingEvent</text>
+  <text x="30" y="90" font-family="monospace" font-size="11" fill="#686868">discoveryPerformerData.events[]</text>
+
+  <!-- divider dashed -->
+  <line x1="30" y1="101" x2="370" y2="101" stroke="#1c1c1c" stroke-width="1" stroke-dasharray="3,6"/>
+
+  <!-- queue-it -->
+  <text x="30" y="117" font-family="monospace" font-size="11" fill="#3c3c3c">queue-it waitroom detect</text>
+  <text x="30" y="133" font-family="monospace" font-size="9" fill="#272727">synthetic signal — fires when throttling active</text>
+
+  <!-- fallback tag -->
+  <text x="30" y="145" font-family="monospace" font-size="9" fill="#222">fallback: html regex</text>
+
+  <!-- ═══ STEAM BLOCK ═══ -->
+  <rect x="20" y="158" width="360" height="38" fill="none" stroke="#1d1d1d" stroke-width="1"/>
+  <text x="30" y="174" font-family="monospace" font-size="10" fill="#3a3a3a" letter-spacing="3">STEAM NEWS · APPID 570</text>
+  <text x="30" y="189" font-family="monospace" font-size="11" fill="#686868">keyword: ticket · international · on sale</text>
+
+  <!-- ═══ ROUTING LINES ═══ -->
+
+  <!-- AXS right-center (380, 81) → H415 → V128 -->
+  <path d="M380,81 H415 V128" fill="none" stroke="#252525" stroke-width="1"/>
+
+  <!-- Steam right-center (380, 177) → H415 → V128 -->
+  <path d="M380,177 H415 V128" fill="none" stroke="#252525" stroke-width="1"/>
+
+  <!-- junction dot -->
+  <circle cx="415" cy="128" r="2.5" fill="#2e2e2e"/>
+
+  <!-- junction → bbolt -->
+  <line x1="415" y1="128" x2="453" y2="128" stroke="#2e2e2e" stroke-width="1" marker-end="url(#a1)"/>
+
+  <!-- ═══ BBOLT BLOCK ═══ -->
+  <rect x="453" y="108" width="130" height="40" fill="#080808" stroke="#242424" stroke-width="1"/>
+  <text x="463" y="125" font-family="monospace" font-size="11" fill="#888">BBOLT</text>
+  <text x="463" y="140" font-family="monospace" font-size="9" fill="#333">dedup · seen event ids</text>
+
+  <!-- bbolt → telegram -->
+  <line x1="583" y1="128" x2="623" y2="128" stroke="#555" stroke-width="1" marker-end="url(#a2)"/>
+
+  <!-- ═══ TELEGRAM BLOCK ═══ -->
+  <rect x="623" y="108" width="200" height="40" fill="#080808" stroke="#242424" stroke-width="1"/>
+  <text x="635" y="125" font-family="monospace" font-size="11" fill="#aaa">▸ TELEGRAM</text>
+  <text x="635" y="140" font-family="monospace" font-size="9" fill="#444">broadcast · N subscribers</text>
+
+  <!-- ═══ BOTTOM META ═══ -->
+  <line x1="20" y1="206" x2="880" y2="206" stroke="#111" stroke-width="1"/>
+  <text x="20" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">poll: 5min ± 25% jitter</text>
+  <text x="220" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">dedup: bbolt kv store</text>
+  <text x="430" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">independent monitors</text>
+  <text x="660" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">new id only → fires once</text>
+
+</svg>

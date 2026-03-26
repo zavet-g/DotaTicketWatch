@@ -37,11 +37,7 @@
 
 ## С И Г Н А Л Ы
 
-```
-axs.com ──▸  __NEXT_DATA__ × 3 sources  ──┐
-             queue-it waitroom detect      ├──▸  bbolt dedup  ──▸  🚨 telegram
-steam ────▸  keyword match  ───────────────┘
-```
+<img src="assets/pipeline.svg" width="100%"/>
 
 &nbsp;
 
