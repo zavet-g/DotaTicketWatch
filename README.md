@@ -142,22 +142,7 @@ admin команды видны только тебе — scoped через `set
 
 &nbsp;
 
-<details>
-<summary><sub>с т р у к т у р а</sub></summary>
-
-```
-cmd/
-  bot/          telegram бот + поллинг
-  check/        дебаг cli: каскадный фетч + парсинг
-internal/
-  monitor/      axs + steam news мониторы
-  fetcher/      tls-client, flaresolverr, curl fallback
-  notifier/     telegram broadcast
-  storage/      bbolt: подписчики + seen event ids
-  config/       конфиг из env
-```
-
-</details>
+<img src="assets/tree.svg" width="100%"/>
 
 ---
 

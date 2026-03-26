@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 215" width="900" height="215">
+
+  <rect width="900" height="215" fill="#000"/>
+
+  <defs>
+    <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
+      <rect width="900" height="1" fill="rgba(255,255,255,0.022)"/>
+    </pattern>
+    <style>
+      /* branch lines — stroke-dashoffset draw animation */
+      .ln0{animation:aln0 15s linear infinite}
+      .ln1{animation:aln1 15s linear infinite}
+      .ln2{animation:aln2 15s linear infinite}
+      .ln3{animation:aln3 15s linear infinite}
+      .ln4{animation:aln4 15s linear infinite}
+      .ln5{animation:aln5 15s linear infinite}
+      .ln6{animation:aln6 15s linear infinite}
+      .ln7{animation:aln7 15s linear infinite}
+      .ln8{animation:aln8 15s linear infinite}
+      .ln9{animation:aln9 15s linear infinite}
+      .ln10{animation:aln10 15s linear infinite}
+      .ln11{animation:aln11 15s linear infinite}
+
+      /* text nodes — opacity animation */
+      .t0{animation:at0 15s linear infinite}
+      .t1{animation:at1 15s linear infinite}
+      .t2{animation:at2 15s linear infinite}
+      .t3{animation:at3 15s linear infinite}
+      .t4{animation:at4 15s linear infinite}
+      .t5{animation:at5 15s linear infinite}
+      .t6{animation:at6 15s linear infinite}
+      .t7{animation:at7 15s linear infinite}
+      .t8{animation:at8 15s linear infinite}
+      .t9{animation:at9 15s linear infinite}
+
+      /* ── line keyframes ── */
+      @keyframes aln0{0%,2%{stroke-dashoffset:71;opacity:1}12%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:71;opacity:0}}
+      @keyframes aln1{0%,6%{stroke-dashoffset:36;opacity:1}8%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:36;opacity:0}}
+      @keyframes aln2{0%,9%{stroke-dashoffset:36;opacity:1}14%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:36;opacity:0}}
+      @keyframes aln3{0%,11%{stroke-dashoffset:30;opacity:1}13%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+      @keyframes aln4{0%,13%{stroke-dashoffset:30;opacity:1}15%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+      @keyframes aln5{0%,11%{stroke-dashoffset:36;opacity:1}13%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:36;opacity:0}}
+      @keyframes aln6{0%,13%{stroke-dashoffset:90;opacity:1}27%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:90;opacity:0}}
+      @keyframes aln7{0%,15%{stroke-dashoffset:30;opacity:1}17%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+      @keyframes aln8{0%,18%{stroke-dashoffset:30;opacity:1}20%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+      @keyframes aln9{0%,21%{stroke-dashoffset:30;opacity:1}23%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+      @keyframes aln10{0%,24%{stroke-dashoffset:30;opacity:1}26%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+      @keyframes aln11{0%,27%{stroke-dashoffset:30;opacity:1}29%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+
+      /* ── text keyframes ── */
+      @keyframes at0{0%{opacity:0}2%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at1{0%,8%{opacity:0}10%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at2{0%,13%{opacity:0}15%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at3{0%,15%{opacity:0}17%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at4{0%,13%{opacity:0}15%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at5{0%,17%{opacity:0}19%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at6{0%,20%{opacity:0}22%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at7{0%,23%{opacity:0}25%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at8{0%,26%{opacity:0}28%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at9{0%,29%{opacity:0}31%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+    </style>
+  </defs>
+
+  <rect width="900" height="215" fill="url(#scan)"/>
+
+  <!-- ══ BRANCH LINES ══ -->
+
+  <!-- trunk: root → internal -->
+  <line class="ln0" x1="50" y1="35" x2="50" y2="106"
+    stroke="#222" stroke-width="1" fill="none"
+    stroke-dasharray="71" stroke-dashoffset="71"/>
+
+  <!-- H: trunk → cmd -->
+  <line class="ln1" x1="50" y1="52" x2="86" y2="52"
+    stroke="#222" stroke-width="1" fill="none"
+    stroke-dasharray="36" stroke-dashoffset="36"/>
+
+  <!-- V: cmd subtree -->
+  <line class="ln2" x1="86" y1="52" x2="86" y2="88"
+    stroke="#1c1c1c" stroke-width="1" fill="none"
+    stroke-dasharray="36" stroke-dashoffset="36"/>
+
+  <!-- H: cmd → bot -->
+  <line class="ln3" x1="86" y1="70" x2="116" y2="70"
+    stroke="#1c1c1c" stroke-width="1" fill="none"
+    stroke-dasharray="30" stroke-dashoffset="30"/>
+
+  <!-- H: cmd → check -->
+  <line class="ln4" x1="86" y1="88" x2="116" y2="88"
+    stroke="#1c1c1c" stroke-width="1" fill="none"
+    stroke-dasharray="30" stroke-dashoffset="30"/>
+
+  <!-- H: trunk → internal -->
+  <line class="ln5" x1="50" y1="106" x2="86" y2="106"
+    stroke="#222" stroke-width="1" fill="none"
+    stroke-dasharray="36" stroke-dashoffset="36"/>
+
+  <!-- V: internal subtree -->
+  <line class="ln6" x1="86" y1="106" x2="86" y2="196"
+    stroke="#1c1c1c" stroke-width="1" fill="none"
+    stroke-dasharray="90" stroke-dashoffset="90"/>
+
+  <!-- H branches: internal children -->
+  <line class="ln7"  x1="86" y1="124" x2="116" y2="124" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
+  <line class="ln8"  x1="86" y1="142" x2="116" y2="142" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
+  <line class="ln9"  x1="86" y1="160" x2="116" y2="160" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
+  <line class="ln10" x1="86" y1="178" x2="116" y2="178" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
+  <line class="ln11" x1="86" y1="196" x2="116" y2="196" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
+
+  <!-- ══ TEXT NODES ══ -->
+
+  <!-- root -->
+  <text class="t0" x="40" y="36"
+    font-family="monospace" font-size="13" fill="#555">·</text>
+
+  <!-- cmd/ -->
+  <text class="t1" x="90" y="56"
+    font-family="monospace" font-size="12">
+    <tspan fill="#555">cmd/</tspan>
+  </text>
+
+  <!-- bot/ -->
+  <text class="t2" x="120" y="74"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">bot/</tspan>
+    <tspan fill="#222">  ·  telegram бот · polling loop</tspan>
+  </text>
+
+  <!-- check/ -->
+  <text class="t3" x="120" y="92"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">check/</tspan>
+    <tspan fill="#222">  ·  debug cli · cascade fetch + parse</tspan>
+  </text>
+
+  <!-- internal/ -->
+  <text class="t4" x="90" y="110"
+    font-family="monospace" font-size="12">
+    <tspan fill="#555">internal/</tspan>
+  </text>
+
+  <!-- monitor/ -->
+  <text class="t5" x="120" y="128"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">monitor/</tspan>
+    <tspan fill="#222">  ·  axs + steam news</tspan>
+  </text>
+
+  <!-- fetcher/ -->
+  <text class="t6" x="120" y="146"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">fetcher/</tspan>
+    <tspan fill="#222">  ·  tls-client · flaresolverr · curl</tspan>
+  </text>
+
+  <!-- notifier/ -->
+  <text class="t7" x="120" y="164"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">notifier/</tspan>
+    <tspan fill="#222">  ·  telegram broadcast</tspan>
+  </text>
+
+  <!-- storage/ -->
+  <text class="t8" x="120" y="182"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">storage/</tspan>
+    <tspan fill="#222">  ·  bbolt · subscribers + seen ids</tspan>
+  </text>
+
+  <!-- config/ -->
+  <text class="t9" x="120" y="200"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">config/</tspan>
+    <tspan fill="#222">  ·  env-based config</tspan>
+  </text>
+
+</svg>
