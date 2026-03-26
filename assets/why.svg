@@ -12,7 +12,14 @@
       .r2  { animation: why2  12s linear infinite }
       .r3  { animation: why3  12s linear infinite }
       .r4  { animation: why4  12s linear infinite }
-      .rb  { animation: why-rb 12s linear infinite }
+      .rb     { animation: why-rb   12s linear infinite }
+      .signal { animation: sig-move 2.4s linear infinite, why-hd 12s linear infinite }
+
+      @keyframes sig-move {
+        0%   { transform: translateY(0px)   }
+        92%  { transform: translateY(104px) }
+        100% { transform: translateY(0px)   }
+      }
 
       @keyframes why-hd { 0%,2%  { opacity:0 } 6%,68%  { opacity:1 } 76%,100% { opacity:0 } }
       @keyframes why1   { 0%,10% { opacity:0 } 14%,68% { opacity:1 } 76%,100% { opacity:0 } }
@@ -31,8 +38,9 @@
   <text class="hd" x="200" y="36" font-family="monospace" font-size="10" fill="#2e2e2e" letter-spacing="3">РЕШЕНИЕ</text>
   <line class="hd" x1="20" y1="44" x2="880" y2="44" stroke="#181818" stroke-width="1"/>
 
-  <!-- column divider -->
+  <!-- column divider + signal -->
   <line class="hd" x1="185" y1="44" x2="185" y2="156" stroke="#121212" stroke-width="1"/>
+  <rect class="signal" x="183" y="44" width="3" height="8" fill="#444" rx="1"/>
 
   <!-- go -->
   <text class="r1" x="30"  y="66" font-family="monospace" font-size="11" fill="#555">go</text>

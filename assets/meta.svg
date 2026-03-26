@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 120" width="900" height="120">
+
+  <rect width="900" height="120" fill="#000"/>
+
+  <defs>
+    <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
+      <rect width="900" height="1" fill="rgba(255,255,255,0.02)"/>
+    </pattern>
+    <style>
+      .sub1 { animation: sb1 21s linear infinite }
+      .sub2 { animation: sb2 21s linear infinite }
+      .sub3 { animation: sb3 21s linear infinite }
+      .sep  { animation: tg  21s linear infinite }
+      .tags { animation: tg  21s linear infinite }
+      .cur  { animation: bl  0.9s step-end infinite, sb-cur 21s linear infinite }
+
+      @keyframes sb1    { 0%,2%  { opacity:0 } 5%,28%  { opacity:1 } 33%      { opacity:0 } 100%     { opacity:0 } }
+      @keyframes sb2    { 0%,33% { opacity:0 } 36%,61% { opacity:1 } 66%      { opacity:0 } 100%     { opacity:0 } }
+      @keyframes sb3    { 0%,66% { opacity:0 } 69%,94% { opacity:1 } 99%,100% { opacity:0 } }
+      @keyframes tg     { 0%,5%  { opacity:0 } 10%,94% { opacity:1 } 99%,100% { opacity:0 } }
+      @keyframes sb-cur { 0%,2%  { opacity:0 } 5%,94%  { opacity:1 } 99%,100% { opacity:0 } }
+      @keyframes bl     { 50% { opacity:0 } }
+    </style>
+  </defs>
+
+  <rect width="900" height="120" fill="url(#scan)"/>
+
+  <!-- rotating subtitle lines (all centered, only one visible at a time) -->
+  <text class="sub1" x="450" y="48"
+    text-anchor="middle" font-family="monospace" font-size="18" fill="#888" letter-spacing="4">WATCHING BEFORE ANYONE ELSE</text>
+
+  <text class="sub2" x="450" y="48"
+    text-anchor="middle" font-family="monospace" font-size="18" fill="#888" letter-spacing="4">AXS  ·  STEAM  ·  TELEGRAM</text>
+
+  <text class="sub3" x="450" y="48"
+    text-anchor="middle" font-family="monospace" font-size="18" fill="#888" letter-spacing="4">TI 2026  ·  SHANGHAI  ·  AUG</text>
+
+  <!-- blinking cursor -->
+  <text class="cur" x="848" y="48"
+    font-family="monospace" font-size="12" fill="#1e1e1e">▮</text>
+
+  <!-- divider -->
+  <line class="sep" x1="80" y1="64" x2="820" y2="64" stroke="#1c1c1c" stroke-width="1"/>
+
+  <!-- tag labels -->
+  <text class="tags" x="450" y="90"
+    text-anchor="middle" font-family="monospace" font-size="9" fill="#2a2a2a" letter-spacing="3">MADE IN GO  ·  ZERO DEPS  ·  ALWAYS WATCHING  ·  TI 2026</text>
+
+  <!-- corner marks -->
+  <text class="tags" x="20"  y="112" font-family="monospace" font-size="8" fill="#111">axs · steam · telegram</text>
+  <text class="tags" x="880" y="112" font-family="monospace" font-size="8" fill="#111" text-anchor="end">appid 570 · dota 2</text>
+
+</svg>

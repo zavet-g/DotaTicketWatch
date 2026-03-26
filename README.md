@@ -2,14 +2,7 @@
 
 <img src="assets/banner.svg" width="100%"/>
 
-[![Typing](https://readme-typing-svg.demolab.com?font=Anton&size=26&duration=2200&pause=900&color=FFFFFF&background=00000000&center=true&vCenter=true&width=900&height=55&lines=WATCHING+BEFORE+ANYONE+ELSE;AXS+%C2%B7+STEAM+%C2%B7+TELEGRAM;TI+2026+%C2%B7+SHANGHAI+%C2%B7+AUG)](https://github.com/zavet-g/DotaTicketWatch)
-
-&nbsp;
-
-![](https://img.shields.io/badge/MADE%20IN-GO-ffffff?style=for-the-badge&color=000000&labelColor=000000&logo=go&logoColor=ffffff)
-![](https://img.shields.io/badge/ZERO-DEPS-ffffff?style=for-the-badge&color=000000&labelColor=000000)
-![](https://img.shields.io/badge/ALWAYS-WATCHING-ffffff?style=for-the-badge&color=000000&labelColor=000000)
-![](https://img.shields.io/badge/TI-2026-ffffff?style=for-the-badge&color=000000&labelColor=000000)
+<img src="assets/meta.svg" width="100%"/>
 
 </div>
 
@@ -79,15 +72,6 @@ fallback: regex по raw HTML если `__NEXT_DATA__` вдруг исчезне
 ## П О Ч Е М У  Т А К
 
 <img src="assets/why.svg" width="100%"/>
-
-&nbsp;
-
-```
-Go           — статический бинарь, 15MB docker образ, нет рантайм зависимостей
-bbolt        — embedded kv хранилище. без postgres, без redis. просто файл.
-tls-client   — имитирует TLS fingerprint Chrome 120 на уровне хэндшейка
-FlareSolverr — headless Chrome для JS-челленджей. последний эшелон.
-```
 
 &nbsp;
 
