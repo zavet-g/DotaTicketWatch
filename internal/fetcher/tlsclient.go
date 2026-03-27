@@ -3,6 +3,7 @@ package fetcher
 import (
 	"fmt"
 	"io"
+	"sync"
 	"time"
 
 	http "github.com/bogdanfinn/fhttp"
@@ -10,16 +11,24 @@ import (
 	"github.com/bogdanfinn/tls-client/profiles"
 )
 
+var (
+	tlsOnce   sync.Once
+	tlsClient tls_client.HttpClient
+	tlsErr    error
+)
+
 func fetchTLSClient(url string) (string, error) {
-	jar := tls_client.NewCookieJar()
-	client, err := tls_client.NewHttpClient(tls_client.NewNoopLogger(),
-		tls_client.WithTimeoutSeconds(30),
-		tls_client.WithClientProfile(profiles.Chrome_133),
-		tls_client.WithCookieJar(jar),
-		tls_client.WithNotFollowRedirects(),
-	)
-	if err != nil {
-		return "", fmt.Errorf("tls-client init: %w", err)
+	tlsOnce.Do(func() {
+		jar := tls_client.NewCookieJar()
+		tlsClient, tlsErr = tls_client.NewHttpClient(tls_client.NewNoopLogger(),
+			tls_client.WithTimeoutSeconds(30),
+			tls_client.WithClientProfile(profiles.Chrome_133),
+			tls_client.WithCookieJar(jar),
+			tls_client.WithNotFollowRedirects(),
+		)
+	})
+	if tlsErr != nil {
+		return "", fmt.Errorf("tls-client init: %w", tlsErr)
 	}
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -50,7 +59,7 @@ func fetchTLSClient(url string) (string, error) {
 
 	time.Sleep(500 * time.Millisecond)
 
-	resp, err := client.Do(req)
+	resp, err := tlsClient.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("tls-client request: %w", err)
 	}

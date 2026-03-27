@@ -29,18 +29,19 @@ type flareSolverrResponse struct {
 	Message  string               `json:"message"`
 }
 
+var flareSolverrHTTPClient = &http.Client{Timeout: 150 * time.Second}
+
 func fetchFlareSolverr(url, baseURL string) (string, error) {
 	payload, _ := json.Marshal(flareSolverrRequest{
 		Cmd:               "request.get",
 		URL:               url,
-		MaxTimeout:        60000,
+		MaxTimeout:        120000,
 		Session:           "axs-monitor",
 		SessionTTLMinutes: 30,
 		DisableMedia:      true,
 	})
 
-	httpClient := &http.Client{Timeout: 90 * time.Second}
-	resp, err := httpClient.Post(baseURL+"/v1", "application/json", bytes.NewReader(payload))
+	resp, err := flareSolverrHTTPClient.Post(baseURL+"/v1", "application/json", bytes.NewReader(payload))
 	if err != nil {
 		return "", fmt.Errorf("flaresolverr request: %w", err)
 	}
