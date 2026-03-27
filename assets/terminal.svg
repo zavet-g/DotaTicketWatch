@@ -1,51 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 148" width="900" height="148">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 165" width="900" height="165">
 
-  <rect width="900" height="148" fill="#000"/>
+  <rect width="900" height="165" fill="#000"/>
 
   <defs>
     <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
       <rect width="900" height="1" fill="rgba(255,255,255,0.022)"/>
     </pattern>
     <style>
-      .l1{animation:s1 10s linear infinite}
-      .l2{animation:s2 10s linear infinite}
-      .l3{animation:s3 10s linear infinite}
-      .l4{animation:s4 10s linear infinite}
-      .sp{animation:s5 10s linear infinite}
-      .l6{animation:s6 10s linear infinite}
-      .l7{animation:s7 10s linear infinite}
-      .cur{animation:bl 0.85s step-end infinite}
+      .l1  { animation: s1 10s linear infinite }
+      .l2  { animation: s2 10s linear infinite }
+      .l3  { animation: s3 10s linear infinite }
+      .l4  { animation: s4 10s linear infinite }
+      .l5  { animation: s5 10s linear infinite }
+      .sp  { animation: s6 10s linear infinite }
+      .l7  { animation: s7 10s linear infinite }
+      .l8  { animation: s8 10s linear infinite }
+      .cur { animation: bl 0.85s step-end infinite }
 
-      @keyframes s1{0%,3%{opacity:0}8%,64%{opacity:1}73%,100%{opacity:0}}
-      @keyframes s2{0%,13%{opacity:0}18%,64%{opacity:1}73%,100%{opacity:0}}
-      @keyframes s3{0%,23%{opacity:0}28%,64%{opacity:1}73%,100%{opacity:0}}
-      @keyframes s4{0%,31%{opacity:0}36%,64%{opacity:1}73%,100%{opacity:0}}
-      @keyframes s5{0%,40%{opacity:0}44%,64%{opacity:1}73%,100%{opacity:0}}
-      @keyframes s6{0%,45%{opacity:0}50%,64%{opacity:1}73%,100%{opacity:0}}
-      @keyframes s7{0%,53%{opacity:0}58%,64%{opacity:1}73%,100%{opacity:0}}
-      @keyframes bl{50%{opacity:0}}
+      @keyframes s1 { 0%,3%  { opacity:0 } 7%,64%  { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s2 { 0%,11% { opacity:0 } 15%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s3 { 0%,19% { opacity:0 } 23%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s4 { 0%,27% { opacity:0 } 31%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s5 { 0%,35% { opacity:0 } 39%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s6 { 0%,42% { opacity:0 } 46%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s7 { 0%,48% { opacity:0 } 53%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes s8 { 0%,56% { opacity:0 } 61%,64% { opacity:1 } 73%,100% { opacity:0 } }
+      @keyframes bl { 50% { opacity:0 } }
     </style>
   </defs>
 
-  <rect width="900" height="148" fill="url(#scan)"/>
+  <rect width="900" height="165" fill="url(#scan)"/>
 
   <!-- left edge mark -->
-  <line x1="32" y1="14" x2="32" y2="134" stroke="#111" stroke-width="1"/>
+  <line x1="32" y1="14" x2="32" y2="151" stroke="#111" stroke-width="1"/>
 
-  <!-- idle lines -->
-  <text class="l1" x="46" y="32"  font-family="monospace" font-size="12" fill="#3c3c3c">[axs]   performerEventsData    ·  0 events</text>
-  <text class="l2" x="46" y="52"  font-family="monospace" font-size="12" fill="#3c3c3c">[axs]   teamUpcoming           ·  none</text>
-  <text class="l3" x="46" y="72"  font-family="monospace" font-size="12" fill="#3c3c3c">[steam] 10 items               ·  no match</text>
-  <text class="l4" x="46" y="92"  font-family="monospace" font-size="12" fill="#555">·  all clear  ·  27.03  ·  23:14:08</text>
+  <text class="l1" x="46" y="30"  font-family="monospace" font-size="12" fill="#3c3c3c">[axs]    performerEventsData    ·  0 events</text>
+  <text class="l2" x="46" y="48"  font-family="monospace" font-size="12" fill="#3c3c3c">[axs]    teamUpcoming           ·  none</text>
+  <text class="l3" x="46" y="66"  font-family="monospace" font-size="12" fill="#3c3c3c">[steam]  20 items               ·  no match</text>
+  <text class="l4" x="46" y="84"  font-family="monospace" font-size="12" fill="#3c3c3c">[reddit] r/DotA2  25 posts      ·  no match</text>
+  <text class="l5" x="46" y="99"  font-family="monospace" font-size="12" fill="#555">·  all clear  ·  27.03  ·  23:14:08</text>
 
-  <!-- separator -->
-  <text class="sp" x="46" y="107" font-family="monospace" font-size="11" fill="#222">─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─</text>
+  <text class="sp" x="46" y="113" font-family="monospace" font-size="11" fill="#222">─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─</text>
 
-  <!-- detection lines -->
-  <text class="l6" x="46" y="120" font-family="monospace" font-size="12" fill="#888">▸  [axs]  new event detected   ·  id 5872310</text>
-  <text class="l7" x="46" y="138" font-family="monospace" font-size="12" fill="#777">▸  notified 2 subscribers</text>
+  <text class="l7" x="46" y="130" font-family="monospace" font-size="12" fill="#888">▸  [reddit] keyword match  ·  "ticket sale"</text>
+  <text class="l8" x="46" y="151" font-family="monospace" font-size="12" fill="#777">▸  notified subscribers  ·  ускоренный опрос</text>
 
-  <!-- blinking cursor -->
-  <text class="cur" x="46" y="138" font-family="monospace" font-size="12" fill="#2a2a2a">▮</text>
+  <text class="cur" x="46" y="151" font-family="monospace" font-size="12" fill="#2a2a2a">▮</text>
 
 </svg>

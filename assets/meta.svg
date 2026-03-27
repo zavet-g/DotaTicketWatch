@@ -30,7 +30,7 @@
     text-anchor="middle" font-family="monospace" font-size="18" fill="#888" letter-spacing="4">WATCHING BEFORE ANYONE ELSE</text>
 
   <text class="sub2" x="450" y="48"
-    text-anchor="middle" font-family="monospace" font-size="18" fill="#888" letter-spacing="4">AXS  ·  STEAM  ·  TELEGRAM</text>
+    text-anchor="middle" font-family="monospace" font-size="18" fill="#888" letter-spacing="4">AXS  ·  STEAM  ·  REDDIT  ·  TELEGRAM</text>
 
   <text class="sub3" x="450" y="48"
     text-anchor="middle" font-family="monospace" font-size="18" fill="#888" letter-spacing="4">TI 2026  ·  SHANGHAI  ·  AUG</text>
@@ -47,7 +47,7 @@
     text-anchor="middle" font-family="monospace" font-size="9" fill="#2a2a2a" letter-spacing="3">MADE IN GO  ·  ZERO DEPS  ·  ALWAYS WATCHING  ·  TI 2026</text>
 
   <!-- corner marks -->
-  <text class="tags" x="20"  y="112" font-family="monospace" font-size="8" fill="#111">axs · steam · telegram</text>
+  <text class="tags" x="20"  y="112" font-family="monospace" font-size="8" fill="#111">axs · steam · reddit · telegram</text>
   <text class="tags" x="880" y="112" font-family="monospace" font-size="8" fill="#111" text-anchor="end">appid 570 · dota 2</text>
 
 </svg>
