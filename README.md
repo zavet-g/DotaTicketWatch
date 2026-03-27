@@ -44,7 +44,7 @@ discoveryPerformerData.events[]       — индекс поиска
 
 дополнительный сигнал: Queue-it. когда AXS начинает пускать трафик через очередь (`queueit-overlay`, `inqueue.queue-it.net`) — это значит **страница под нагрузкой. билеты живые.** детектим и это тоже.
 
-fallback: regex по raw HTML если `__NEXT_DATA__` вдруг исчезнет.
+дополнительный слой: regex по raw HTML — работает всегда поверх JSON-парсинга, дубли отсеиваются.
 
 &nbsp;
 
