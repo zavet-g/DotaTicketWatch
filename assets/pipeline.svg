@@ -1,9 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 215" width="900" height="215">
 
-  <!-- background -->
   <rect width="900" height="215" fill="#000"/>
 
-  <!-- scanlines -->
   <defs>
     <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
       <rect width="900" height="1" fill="rgba(255,255,255,0.022)"/>
@@ -14,68 +12,138 @@
     <marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
       <path d="M0,0 L0,7 L7,3.5 z" fill="#666"/>
     </marker>
+    <style>
+      /* ── 15s master loop: sequential block reveal ── */
+      .g-axs  { animation: gaxs  15s linear infinite }
+      .g-stm  { animation: gstm  15s linear infinite }
+      .g-rt   { animation: grt   15s linear infinite }
+      .g-bb   { animation: gbb   15s linear infinite }
+      .g-bta  { animation: gbta  15s linear infinite }
+      .g-tg   { animation: gtg   15s linear infinite }
+      .g-meta { animation: gmeta 15s linear infinite }
+
+      @keyframes gaxs  { 0%,3%  {opacity:0} 8%,74%  {opacity:1} 80%,100%{opacity:0} }
+      @keyframes gstm  { 0%,10% {opacity:0} 15%,74% {opacity:1} 80%,100%{opacity:0} }
+      @keyframes grt   { 0%,17% {opacity:0} 22%,74% {opacity:1} 80%,100%{opacity:0} }
+      @keyframes gbb   { 0%,22% {opacity:0} 27%,74% {opacity:1} 80%,100%{opacity:0} }
+      @keyframes gbta  { 0%,27% {opacity:0} 31%,74% {opacity:1} 80%,100%{opacity:0} }
+      @keyframes gtg   { 0%,31% {opacity:0} 36%,74% {opacity:1} 80%,100%{opacity:0} }
+      @keyframes gmeta { 0%,36% {opacity:0} 41%,74% {opacity:1} 80%,100%{opacity:0} }
+
+      /* ── marching data packets on wires ── */
+      .march-axs { stroke-dasharray:5,12; animation:march    2.2s linear infinite }
+      .march-stm { stroke-dasharray:5,12; animation:march    2.7s linear infinite }
+      .march-jb  { stroke-dasharray:4,10; animation:march-jb 1.8s linear infinite }
+      .march-bt  { stroke-dasharray:4,8;  animation:march-bt 1.1s linear infinite }
+
+      @keyframes march    { from{stroke-dashoffset:0} to{stroke-dashoffset:-17} }
+      @keyframes march-jb { from{stroke-dashoffset:0} to{stroke-dashoffset:-14} }
+      @keyframes march-bt { from{stroke-dashoffset:0} to{stroke-dashoffset:-12} }
+
+      /* ── junction dot pulse (inside .g-rt, multiplies with group opacity) ── */
+      .j-dot { animation: jpulse 2.1s ease-in-out infinite }
+      @keyframes jpulse { 0%,100%{opacity:0.35} 50%{opacity:1} }
+
+      /* ── AXS scan sweep ── */
+      .axs-sw { animation: axssweep 3.8s linear infinite }
+      @keyframes axssweep {
+        0%   { transform: translateY(0px);   opacity: 0.07 }
+        95%  { transform: translateY(132px); opacity: 0.07 }
+        100% { transform: translateY(132px); opacity: 0    }
+      }
+
+      /* ── JSON source pings: three independent prime-ish cycles ── */
+      .src1 { animation: pg1 4s  linear infinite }
+      .src2 { animation: pg2 5s  linear infinite }
+      .src3 { animation: pg3 4.5s linear infinite }
+      @keyframes pg1 { 0%,20%{opacity:0.5} 25%{opacity:1} 28%{opacity:0.5} 100%{opacity:0.5} }
+      @keyframes pg2 { 0%,55%{opacity:0.5} 60%{opacity:1} 63%{opacity:0.5} 100%{opacity:0.5} }
+      @keyframes pg3 { 0%,75%{opacity:0.5} 80%{opacity:1} 83%{opacity:0.5} 100%{opacity:0.5} }
+
+      /* ── steam keyword ping ── */
+      .stm-ping { animation: stmpg 6s linear infinite }
+      @keyframes stmpg { 0%,60%{opacity:0.55} 65%{opacity:1} 68%{opacity:0.55} 100%{opacity:0.55} }
+
+      /* ── telegram ▸ pulse ── */
+      .tg-tick { animation: tgtick 2.8s ease-in-out infinite }
+      @keyframes tgtick { 0%,100%{opacity:0.5} 50%{opacity:1} }
+    </style>
   </defs>
+
   <rect width="900" height="215" fill="url(#scan)"/>
 
   <!-- ═══ AXS BLOCK ═══ -->
-  <rect x="20" y="15" width="360" height="132" fill="none" stroke="#1d1d1d" stroke-width="1"/>
+  <g class="g-axs">
+    <rect x="20" y="15" width="360" height="132" fill="none" stroke="#1d1d1d" stroke-width="1"/>
+    <text x="30" y="32" font-family="monospace" font-size="10" fill="#3a3a3a" letter-spacing="3">AXS.COM · __NEXT_DATA__</text>
+    <line x1="20" y1="38" x2="380" y2="38" stroke="#181818" stroke-width="1"/>
 
-  <!-- header -->
-  <text x="30" y="32" font-family="monospace" font-size="10" fill="#3a3a3a" letter-spacing="3">AXS.COM · __NEXT_DATA__</text>
-  <line x1="20" y1="38" x2="380" y2="38" stroke="#181818" stroke-width="1"/>
+    <!-- scan sweep inside AXS block -->
+    <rect class="axs-sw" x="21" y="15" width="358" height="1" fill="white"/>
 
-  <!-- 3 JSON sources -->
-  <text x="30" y="56" font-family="monospace" font-size="11" fill="#686868">performerEventsData.eventItems[]</text>
-  <text x="30" y="73" font-family="monospace" font-size="11" fill="#686868">teamUpcomingEventData.upcomingEvent</text>
-  <text x="30" y="90" font-family="monospace" font-size="11" fill="#686868">discoveryPerformerData.events[]</text>
+    <!-- 3 source lines, each pings on its own cycle -->
+    <text class="src1" x="30" y="56" font-family="monospace" font-size="11" fill="#686868">performerEventsData.eventItems[]</text>
+    <text class="src2" x="30" y="73" font-family="monospace" font-size="11" fill="#686868">teamUpcomingEventData.upcomingEvent</text>
+    <text class="src3" x="30" y="90" font-family="monospace" font-size="11" fill="#686868">discoveryPerformerData.events[]</text>
 
-  <!-- divider dashed -->
-  <line x1="30" y1="101" x2="370" y2="101" stroke="#1c1c1c" stroke-width="1" stroke-dasharray="3,6"/>
-
-  <!-- queue-it -->
-  <text x="30" y="117" font-family="monospace" font-size="11" fill="#3c3c3c">queue-it waitroom detect</text>
-  <text x="30" y="133" font-family="monospace" font-size="9" fill="#272727">synthetic signal — fires when throttling active</text>
-
-  <!-- fallback tag -->
-  <text x="30" y="145" font-family="monospace" font-size="9" fill="#222">fallback: html regex</text>
+    <line x1="30" y1="101" x2="370" y2="101" stroke="#1c1c1c" stroke-width="1" stroke-dasharray="3,6"/>
+    <text x="30" y="117" font-family="monospace" font-size="11" fill="#3c3c3c">queue-it waitroom detect</text>
+    <text x="30" y="133" font-family="monospace" font-size="9" fill="#272727">synthetic signal — fires when throttling active</text>
+    <text x="30" y="145" font-family="monospace" font-size="9" fill="#222">fallback: html regex</text>
+  </g>
 
   <!-- ═══ STEAM BLOCK ═══ -->
-  <rect x="20" y="158" width="360" height="38" fill="none" stroke="#1d1d1d" stroke-width="1"/>
-  <text x="30" y="174" font-family="monospace" font-size="10" fill="#3a3a3a" letter-spacing="3">STEAM NEWS · APPID 570</text>
-  <text x="30" y="189" font-family="monospace" font-size="11" fill="#686868">keyword: ticket · international · on sale</text>
+  <g class="g-stm">
+    <rect x="20" y="158" width="360" height="38" fill="none" stroke="#1d1d1d" stroke-width="1"/>
+    <text x="30" y="174" font-family="monospace" font-size="10" fill="#3a3a3a" letter-spacing="3">STEAM NEWS · APPID 570</text>
+    <text class="stm-ping" x="30" y="189" font-family="monospace" font-size="11" fill="#686868">keyword: ticket · international · on sale</text>
+  </g>
 
-  <!-- ═══ ROUTING LINES ═══ -->
+  <!-- ═══ ROUTING PATHS ═══ -->
+  <g class="g-rt">
+    <!-- AXS → junction: static track + marching packets -->
+    <path d="M380,81 H415 V128" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+    <path class="march-axs" d="M380,81 H415 V128" fill="none" stroke="#333" stroke-width="1"/>
 
-  <!-- AXS right-center (380, 81) → H415 → V128 -->
-  <path d="M380,81 H415 V128" fill="none" stroke="#252525" stroke-width="1"/>
+    <!-- Steam → junction: static track + marching packets -->
+    <path d="M380,177 H415 V128" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+    <path class="march-stm" d="M380,177 H415 V128" fill="none" stroke="#333" stroke-width="1"/>
 
-  <!-- Steam right-center (380, 177) → H415 → V128 -->
-  <path d="M380,177 H415 V128" fill="none" stroke="#252525" stroke-width="1"/>
+    <!-- junction → bbolt: static track + marching packets -->
+    <line x1="415" y1="128" x2="453" y2="128" stroke="#1a1a1a" stroke-width="1" marker-end="url(#a1)"/>
+    <line class="march-jb" x1="415" y1="128" x2="446" y2="128" stroke="#3a3a3a" stroke-width="1"/>
 
-  <!-- junction dot -->
-  <circle cx="415" cy="128" r="2.5" fill="#2e2e2e"/>
-
-  <!-- junction → bbolt -->
-  <line x1="415" y1="128" x2="453" y2="128" stroke="#2e2e2e" stroke-width="1" marker-end="url(#a1)"/>
+    <!-- junction dot pulses independently inside this group -->
+    <circle class="j-dot" cx="415" cy="128" r="2.5" fill="#555"/>
+  </g>
 
   <!-- ═══ BBOLT BLOCK ═══ -->
-  <rect x="453" y="108" width="130" height="40" fill="#080808" stroke="#242424" stroke-width="1"/>
-  <text x="463" y="125" font-family="monospace" font-size="11" fill="#888">BBOLT</text>
-  <text x="463" y="140" font-family="monospace" font-size="9" fill="#333">dedup · seen event ids</text>
+  <g class="g-bb">
+    <rect x="453" y="108" width="130" height="40" fill="#080808" stroke="#242424" stroke-width="1"/>
+    <text x="463" y="125" font-family="monospace" font-size="11" fill="#888">BBOLT</text>
+    <text x="463" y="140" font-family="monospace" font-size="9" fill="#333">dedup · seen event ids</text>
+  </g>
 
-  <!-- bbolt → telegram -->
-  <line x1="583" y1="128" x2="623" y2="128" stroke="#555" stroke-width="1" marker-end="url(#a2)"/>
+  <!-- ═══ BBOLT → TELEGRAM ARROW (bright: alert fired) ═══ -->
+  <g class="g-bta">
+    <line x1="583" y1="128" x2="623" y2="128" stroke="#252525" stroke-width="1" marker-end="url(#a2)"/>
+    <line class="march-bt" x1="583" y1="128" x2="618" y2="128" stroke="#666" stroke-width="1"/>
+  </g>
 
   <!-- ═══ TELEGRAM BLOCK ═══ -->
-  <rect x="623" y="108" width="200" height="40" fill="#080808" stroke="#242424" stroke-width="1"/>
-  <text x="635" y="125" font-family="monospace" font-size="11" fill="#aaa">▸ TELEGRAM</text>
-  <text x="635" y="140" font-family="monospace" font-size="9" fill="#444">broadcast · N subscribers</text>
+  <g class="g-tg">
+    <rect x="623" y="108" width="200" height="40" fill="#080808" stroke="#242424" stroke-width="1"/>
+    <text class="tg-tick" x="635" y="125" font-family="monospace" font-size="11" fill="#aaa">▸ TELEGRAM</text>
+    <text x="635" y="140" font-family="monospace" font-size="9" fill="#444">broadcast · N subscribers</text>
+  </g>
 
   <!-- ═══ BOTTOM META ═══ -->
-  <line x1="20" y1="206" x2="880" y2="206" stroke="#111" stroke-width="1"/>
-  <text x="20" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">poll: 5min ± 25% jitter</text>
-  <text x="220" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">dedup: bbolt kv store</text>
-  <text x="430" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">independent monitors</text>
-  <text x="660" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">new id only → fires once</text>
+  <g class="g-meta">
+    <line x1="20" y1="206" x2="880" y2="206" stroke="#111" stroke-width="1"/>
+    <text x="20"  y="213" font-family="monospace" font-size="9" fill="#1e1e1e">poll: 5min ± 25% jitter</text>
+    <text x="220" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">dedup: bbolt kv store</text>
+    <text x="430" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">independent monitors</text>
+    <text x="660" y="213" font-family="monospace" font-size="9" fill="#1e1e1e">new id only → fires once</text>
+  </g>
 
 </svg>
