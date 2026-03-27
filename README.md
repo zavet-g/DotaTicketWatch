@@ -109,15 +109,22 @@ docker compose --profile flaresolverr up -d
 
 &nbsp;
 
-| переменная | default | |
-|---|---|---|
-| `TELEGRAM_BOT_TOKEN` | — | обязательно |
-| `ADMIN_CHAT_ID` | — | твой chat id, сюда идут ошибки |
-| `POLL_INTERVAL_MINUTES` | `5` | минимум 2 |
-| `AXS_HUB_URL` | axs.com/teams/1119906/... | хаб TI 2026 |
-| `STEAM_NEWS_URL` | steampowered.com API | appid 570 |
-| `FLARESOLVERR_URL` | `http://localhost:8191` | опционально |
-| `DB_PATH` | `./data/bot.db` | переживает рестарты |
+```bash
+# ─── обязательно ──────────────────────────────────────────────────
+TELEGRAM_BOT_TOKEN=              # @BotFather
+ADMIN_CHAT_ID=                   # твой chat id · ошибки сюда
+
+# ─── поллинг ──────────────────────────────────────────────────────
+POLL_INTERVAL_MINUTES=5          # минимум 2
+
+# ─── источники ────────────────────────────────────────────────────
+AXS_HUB_URL=axs.com/teams/1119906/...     # хаб TI 2026
+STEAM_NEWS_URL=steampowered.com/api/...   # appid 570
+
+# ─── инфраструктура ───────────────────────────────────────────────
+FLARESOLVERR_URL=http://localhost:8191    # опционально · js-челленджи
+DB_PATH=./data/bot.db                    # переживает рестарты
+```
 
 ---
 
