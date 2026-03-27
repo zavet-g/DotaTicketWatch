@@ -24,7 +24,7 @@ coverage.html
 # VS Code
 .vscode/
 
-# Project planning and Claude artifacts
+# артефакты проекта
 PLAN.md
 CLAUDE.md
 .claude/
