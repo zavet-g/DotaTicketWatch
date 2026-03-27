@@ -26,7 +26,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		TelegramToken:   os.Getenv("TELEGRAM_BOT_TOKEN"),
 		AXSHubURL:       getEnvOrDefault("AXS_HUB_URL", "https://www.axs.com/teams/1119906/the-international-dota-2-tickets"),
-		SteamNewsURL:    getEnvOrDefault("STEAM_NEWS_URL", "https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=570&count=10&format=json"),
+		SteamNewsURL:    getEnvOrDefault("STEAM_NEWS_URL", "https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=570&count=20&format=json"),
 		FlareSolverrURL: getEnvOrDefault("FLARESOLVERR_URL", "http://localhost:8191"),
 		LogLevel:        getEnvOrDefault("LOG_LEVEL", "info"),
 		DBPath:          getEnvOrDefault("DB_PATH", "./data/bot.db"),

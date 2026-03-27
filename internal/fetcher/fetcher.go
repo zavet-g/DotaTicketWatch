@@ -62,6 +62,8 @@ func isRealHTML(html string) bool {
 	lower := strings.ToLower(html)
 	if strings.Contains(lower, "just a moment") ||
 		strings.Contains(lower, "cf-browser-verification") ||
+		strings.Contains(html, "_cf_chl_opt") ||
+		strings.Contains(lower, "enable javascript and cookies to continue") ||
 		(strings.Contains(lower, "cloudflare") && strings.Contains(lower, "checking your browser")) {
 		return false
 	}
