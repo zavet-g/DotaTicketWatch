@@ -15,8 +15,6 @@ services:
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     restart: unless-stopped
-    ports:
-      - "8191:8191"
     environment:
       - LOG_LEVEL=warn
       - DISABLE_MEDIA=true
