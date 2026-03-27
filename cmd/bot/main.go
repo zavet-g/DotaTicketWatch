@@ -534,5 +534,13 @@ func setupLogger(level string) {
 	default:
 		lvl = slog.LevelInfo
 	}
-	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: lvl})))
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: lvl,
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				a.Value = slog.StringValue(a.Value.Time().In(moscow).Format("2006-01-02T15:04:05-07:00"))
+			}
+			return a
+		},
+	})))
 }
