@@ -101,10 +101,11 @@ func extractAXSEvents(html string) ([]Event, error) {
 	} else {
 		if isQueueItActive(html) {
 			events = append(events, Event{
-				ID:     "axs-queueit-active",
-				Title:  "AXS: активна очередь Queue-it — возможно, билеты в продаже!",
-				URL:    "https://www.axs.com/teams/1119906/the-international-dota-2-tickets",
-				Source: "axs",
+				ID:        "axs-queueit-active",
+				Title:     "очередь Queue-it активна · возможно, билеты в продаже",
+				URL:       "https://www.axs.com/teams/1119906/the-international-dota-2-tickets",
+				Source:    "axs",
+				EventType: EventTypeSale,
 			})
 			return events, nil
 		}
@@ -114,10 +115,11 @@ func extractAXSEvents(html string) ([]Event, error) {
 		if !seen[id] {
 			seen[id] = true
 			events = append(events, Event{
-				ID:     id,
-				Title:  "The International 2026 — билеты появились!",
-				URL:    fmt.Sprintf("https://www.axs.com/events/%s/the-international-dota-2-tickets", id),
-				Source: "axs",
+				ID:        id,
+				Title:     "The International 2026 — билеты в продаже",
+				URL:       fmt.Sprintf("https://www.axs.com/events/%s/the-international-dota-2-tickets", id),
+				Source:    "axs",
+				EventType: EventTypeSale,
 			})
 		}
 	}
@@ -162,7 +164,7 @@ func itemToEvent(item axsEventItem) (Event, bool) {
 	}
 	title := item.EventName
 	if title == "" {
-		title = "The International 2026 — билеты появились!"
+		title = "The International 2026 — билеты в продаже"
 	}
 	location := ""
 	if item.VenueCity != "" {
@@ -176,10 +178,11 @@ func itemToEvent(item axsEventItem) (Event, bool) {
 	}
 
 	return Event{
-		ID:     idStr,
-		Title:  title,
-		URL:    fmt.Sprintf("https://www.axs.com/events/%s/%s", idStr, slug),
-		Source: "axs",
+		ID:        idStr,
+		Title:     title,
+		URL:       fmt.Sprintf("https://www.axs.com/events/%s/%s", idStr, slug),
+		Source:    "axs",
+		EventType: EventTypeSale,
 	}, true
 }
 
@@ -189,7 +192,7 @@ func extractIDsFromHTML(html string) []string {
 	var ids []string
 	for _, m := range matches {
 		id := m[1]
-		if !seen[id] && len(id) >= 5 && !strings.Contains(html[:min(500, len(html))], id) {
+		if !seen[id] {
 			seen[id] = true
 			ids = append(ids, id)
 		}

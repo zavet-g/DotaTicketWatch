@@ -65,6 +65,9 @@ func TestItemToEvent_Valid(t *testing.T) {
 	if e.Source != "axs" {
 		t.Errorf("expected source axs, got %s", e.Source)
 	}
+	if e.EventType != EventTypeSale {
+		t.Errorf("EventType = %q, want %q", e.EventType, EventTypeSale)
+	}
 	if e.URL == "" {
 		t.Error("expected non-empty URL")
 	}

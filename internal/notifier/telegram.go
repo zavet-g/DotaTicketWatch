@@ -50,12 +50,19 @@ func formatEvent(e monitor.Event) string {
 		)
 	case "steam":
 		return fmt.Sprintf(
-			"🚨 <b>анонс билетов — Valve</b>\n\n"+
+			"🚨 <b>анонс — Valve</b>\n\n"+
 				"%s\n\n"+
 				"<a href=\"%s\">читать →</a>",
 			e.Title, e.URL,
 		)
+	case "reddit":
+		return fmt.Sprintf(
+			"🚨 <b>r/DotA2</b>\n\n"+
+				"%s\n\n"+
+				"<a href=\"%s\">открыть →</a>",
+			e.Title, e.URL,
+		)
 	default:
-		return fmt.Sprintf("🚨 <b>%s</b>\n%s", e.Title, e.URL)
+		return fmt.Sprintf("▸ <b>%s</b>\n%s", e.Title, e.URL)
 	}
 }

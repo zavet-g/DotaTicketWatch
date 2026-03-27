@@ -40,9 +40,10 @@ type monitorStat struct {
 }
 
 type appState struct {
-	startTime time.Time
-	mu        sync.RWMutex
-	stats     map[string]*monitorStat
+	startTime   time.Time
+	mu          sync.RWMutex
+	stats       map[string]*monitorStat
+	announcedAt time.Time
 }
 
 func newAppState() *appState {
@@ -71,6 +72,20 @@ func (s *appState) updateAndCheck(name string, err error, count int) (shouldNoti
 	st.lastErrText = newErrText
 	st.lastCount = count
 	return
+}
+
+func (s *appState) setAnnounced() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	first := s.announcedAt.IsZero() || time.Since(s.announcedAt) >= 72*time.Hour
+	s.announcedAt = time.Now()
+	return first
+}
+
+func (s *appState) isAccelerated() bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return !s.announcedAt.IsZero() && time.Since(s.announcedAt) < 72*time.Hour
 }
 
 func (s *appState) get(name string) (monitorStat, bool) {
@@ -114,6 +129,7 @@ func main() {
 	monitors := []monitor.Monitor{
 		monitor.NewSteamNewsMonitor(cfg.SteamNewsURL),
 		monitor.NewAXSMonitor(cfg.AXSHubURL, cfg.FlareSolverrURL, fetcher.Fetch),
+		monitor.NewRedditMonitor(),
 	}
 
 	st := newAppState()
@@ -174,6 +190,11 @@ func runChecks(
 				}
 				slog.Info("notified", "source", event.Source, "event_id", event.ID)
 				res.newEvents++
+				if event.EventType == monitor.EventTypeAnnouncement {
+					if st.setAnnounced() {
+						adminFn("▸ режим ускоренного опроса — 1мин / 72ч")
+					}
+				}
 			}
 		}
 
@@ -211,12 +232,16 @@ func runPolling(
 	checkAll(monitors, ntf, store, st, adminFn, mu)
 
 	for {
-		jitter := time.Duration(rand.Int64N(int64(base/2))) - base/4
+		interval := base
+		if st.isAccelerated() {
+			interval = time.Minute
+		}
+		jitter := time.Duration(rand.Int64N(int64(interval/2))) - interval/4
 		select {
 		case <-ctx.Done():
 			return
-		case <-time.After(base + jitter):
-			slog.Debug("polling tick", "sleep", (base + jitter).Round(time.Second))
+		case <-time.After(interval + jitter):
+			slog.Debug("polling tick", "sleep", (interval + jitter).Round(time.Second))
 			checkAll(monitors, ntf, store, st, adminFn, mu)
 		}
 	}
@@ -235,7 +260,7 @@ func runBotCommands(
 	lastCheck *sync.Map,
 ) {
 	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
+	u.Timeout = 30
 	updates := bot.GetUpdatesChan(u)
 
 	for {
@@ -272,7 +297,7 @@ func handleCommand(
 	switch msg.Command() {
 	case "start":
 		if store.IsSubscribed(chatID) {
-			text = "уже подписан"
+			text = "· уже подписан"
 		} else {
 			if err := store.AddSubscriber(chatID, username); err != nil {
 				text = "× ошибка · попробуй позже"
@@ -283,7 +308,7 @@ func handleCommand(
 
 	case "stop":
 		if err := store.RemoveSubscriber(chatID); err != nil {
-			text = "× ошибка отписки"
+			text = "× ошибка · попробуй позже"
 		} else {
 			text = "· отписан"
 		}
@@ -355,11 +380,11 @@ func buildCheckText(monitors []monitor.Monitor, results map[string]checkResult) 
 		ts := time.Now().In(moscow).Format("02.01 · 15:04:05")
 		switch {
 		case hasNew:
-			sb.WriteString(fmt.Sprintf("<b>найдено</b>  <code>%s</code>\n", ts))
+			sb.WriteString(fmt.Sprintf("▸ <b>найдено</b>  <code>%s</code>\n", ts))
 		case hasErr:
-			sb.WriteString(fmt.Sprintf("<b>ошибка</b>  <code>%s</code>\n", ts))
+			sb.WriteString(fmt.Sprintf("× <b>ошибка</b>  <code>%s</code>\n", ts))
 		default:
-			sb.WriteString(fmt.Sprintf("<b>готово</b>  <code>%s</code>\n", ts))
+			sb.WriteString(fmt.Sprintf("· <b>готово</b>  <code>%s</code>\n", ts))
 		}
 	}
 
@@ -413,6 +438,10 @@ func buildStatusText(cfg *config.Config, store *storage.Storage, monitors []moni
 			ago := time.Since(stat.lastCheckAt).Round(time.Second)
 			sb.WriteString(fmt.Sprintf("· %s — %s назад\n", m.Name(), ago))
 		}
+	}
+
+	if st.isAccelerated() {
+		sb.WriteString("\n▸ ускоренный опрос — 1мин\n")
 	}
 
 	sb.WriteString("\n<b>инфраструктура</b>\n")

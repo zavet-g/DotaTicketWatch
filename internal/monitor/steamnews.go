@@ -9,11 +9,13 @@ import (
 	"time"
 )
 
-var ticketPhrases = [][]string{
-	{"ticket", "international"},
-	{"ticket", "dota"},
-	{"on sale", "international"},
-	{"buy", "ticket"},
+var ticketSignals = []string{
+	"tickets", "ticket sale", "on sale", "presale", "pre-sale",
+	"spectator pass", "viewer pass", "axs",
+}
+
+var eventSignals = []string{
+	"the international", "ti 2026", "ti2026",
 }
 
 type steamNewsItem struct {
@@ -52,10 +54,11 @@ func (m *SteamNewsMonitor) Check() ([]Event, error) {
 	for _, item := range items {
 		if isTicketNews(item.Title, item.Contents) {
 			events = append(events, Event{
-				ID:     item.GID,
-				Title:  item.Title,
-				URL:    item.URL,
-				Source: "steam",
+				ID:        item.GID,
+				Title:     item.Title,
+				URL:       item.URL,
+				Source:    "steam",
+				EventType: EventTypeAnnouncement,
 			})
 		}
 	}
@@ -85,19 +88,20 @@ func (m *SteamNewsMonitor) fetch() ([]steamNewsItem, error) {
 
 func isTicketNews(title, contents string) bool {
 	text := strings.ToLower(title + " " + contents)
-	for _, phrase := range ticketPhrases {
-		if allContained(text, phrase) {
+	hasTicket := false
+	for _, s := range ticketSignals {
+		if strings.Contains(text, s) {
+			hasTicket = true
+			break
+		}
+	}
+	if !hasTicket {
+		return false
+	}
+	for _, s := range eventSignals {
+		if strings.Contains(text, s) {
 			return true
 		}
 	}
 	return false
-}
-
-func allContained(text string, words []string) bool {
-	for _, w := range words {
-		if !strings.Contains(text, w) {
-			return false
-		}
-	}
-	return true
 }
