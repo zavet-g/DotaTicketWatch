@@ -11,6 +11,7 @@ type Event struct {
 	URL       string
 	Source    string
 	EventType string
+	ImageURL  string
 }
 
 type Monitor interface {

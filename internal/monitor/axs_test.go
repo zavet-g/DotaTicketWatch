@@ -230,3 +230,122 @@ func TestAXSMonitor_Check_NoEvents(t *testing.T) {
 		t.Errorf("expected 0 events, got %d", len(events))
 	}
 }
+
+func TestPickBestImage_PreferBanner(t *testing.T) {
+	media := []axsMedia{
+		{FileName: "https://images.axs.com/thumb.png", MediaTypeID: 1},
+		{FileName: "https://images.axs.com/banner.png", MediaTypeID: 17},
+		{FileName: "https://images.axs.com/square.png", MediaTypeID: 18},
+	}
+	if got := pickBestImage(media); got != "https://images.axs.com/banner.png" {
+		t.Errorf("expected mediaTypeId 17 banner, got %q", got)
+	}
+}
+
+func TestPickBestImage_FallbackChain(t *testing.T) {
+	media := []axsMedia{
+		{FileName: "https://images.axs.com/thumb.png", MediaTypeID: 1},
+		{FileName: "https://images.axs.com/square.png", MediaTypeID: 18},
+	}
+	if got := pickBestImage(media); got != "https://images.axs.com/square.png" {
+		t.Errorf("expected mediaTypeId 18 fallback, got %q", got)
+	}
+}
+
+func TestPickBestImage_MediaHrefFallback(t *testing.T) {
+	media := []axsMedia{
+		{MediaHref: "https://images.axs.com/banner.png", MediaTypeID: 17},
+	}
+	if got := pickBestImage(media); got != "https://images.axs.com/banner.png" {
+		t.Errorf("expected mediaHref URL, got %q", got)
+	}
+}
+
+func TestPickBestImage_SkipsPlaceholders(t *testing.T) {
+	media := []axsMedia{
+		{FileName: "https://static.discovery-prod.axs.com/axs/bundles/aegaxs/images/defaults/1/1_678_399.png", MediaTypeID: 17},
+		{FileName: "https://images.discovery-prod.axs.com/real-banner.png", MediaTypeID: 18},
+	}
+	if got := pickBestImage(media); got != "https://images.discovery-prod.axs.com/real-banner.png" {
+		t.Errorf("expected real image, got %q", got)
+	}
+}
+
+func TestPickBestImage_AllPlaceholders(t *testing.T) {
+	media := []axsMedia{
+		{FileName: "https://static.discovery-prod.axs.com/axs/bundles/aegaxs/images/defaults/1/1_678_399.png", MediaTypeID: 17},
+	}
+	if got := pickBestImage(media); got != "" {
+		t.Errorf("expected empty when only placeholders, got %q", got)
+	}
+}
+
+func TestPickBestImage_Empty(t *testing.T) {
+	if got := pickBestImage(nil); got != "" {
+		t.Errorf("expected empty for nil, got %q", got)
+	}
+	if got := pickBestImage([]axsMedia{}); got != "" {
+		t.Errorf("expected empty for empty slice, got %q", got)
+	}
+}
+
+func TestItemToEvent_ImageURL(t *testing.T) {
+	item := axsEventItem{
+		ID: json.Number("916200"),
+		Media: []axsMedia{
+			{FileName: "https://images.axs.com/small.png", MediaTypeID: 1},
+			{FileName: "https://images.axs.com/banner.png", MediaTypeID: 17},
+		},
+	}
+	e, ok := itemToEvent(item)
+	if !ok {
+		t.Fatal("expected ok=true")
+	}
+	if e.ImageURL != "https://images.axs.com/banner.png" {
+		t.Errorf("expected banner URL, got %q", e.ImageURL)
+	}
+}
+
+func TestItemToEvent_NoImageURL(t *testing.T) {
+	item := axsEventItem{ID: json.Number("916200")}
+	e, ok := itemToEvent(item)
+	if !ok {
+		t.Fatal("expected ok=true")
+	}
+	if e.ImageURL != "" {
+		t.Errorf("expected empty ImageURL for no media, got %q", e.ImageURL)
+	}
+}
+
+func TestItemToEvent_RelatedMediaFallback(t *testing.T) {
+	item := axsEventItem{
+		ID: json.Number("916200"),
+		RelatedMedia: []axsMedia{
+			{MediaHref: "https://images.discovery-prod.axs.com/banner.png", MediaTypeID: 17},
+		},
+	}
+	e, ok := itemToEvent(item)
+	if !ok {
+		t.Fatal("expected ok=true")
+	}
+	if e.ImageURL != "https://images.discovery-prod.axs.com/banner.png" {
+		t.Errorf("expected relatedMedia URL, got %q", e.ImageURL)
+	}
+}
+
+func TestItemToEvent_MediaTakesPriorityOverRelatedMedia(t *testing.T) {
+	item := axsEventItem{
+		ID:    json.Number("916200"),
+		Media: []axsMedia{{FileName: "https://images.axs.com/media.png", MediaTypeID: 17}},
+		RelatedMedia: []axsMedia{
+			{MediaHref: "https://images.axs.com/related.png", MediaTypeID: 17},
+		},
+	}
+	e, ok := itemToEvent(item)
+	if !ok {
+		t.Fatal("expected ok=true")
+	}
+	if e.ImageURL != "https://images.axs.com/media.png" {
+		t.Errorf("media must take priority over relatedMedia, got %q", e.ImageURL)
+	}
+}

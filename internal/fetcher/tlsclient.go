@@ -69,7 +69,7 @@ func fetchTLSClient(url string) (string, error) {
 		return "", fmt.Errorf("tls-client: status %d", resp.StatusCode)
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
 	if err != nil {
 		return "", fmt.Errorf("tls-client read body: %w", err)
 	}

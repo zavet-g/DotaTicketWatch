@@ -47,7 +47,7 @@ func fetchFlareSolverr(url, baseURL string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	raw, err := io.ReadAll(resp.Body)
+	raw, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
 	if err != nil {
 		return "", fmt.Errorf("flaresolverr read response: %w", err)
 	}

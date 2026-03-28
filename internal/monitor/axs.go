@@ -37,14 +37,29 @@ type axsNextData struct {
 	} `json:"props"`
 }
 
+type axsMedia struct {
+	FileName    string `json:"fileName"`
+	MediaHref   string `json:"mediaHref"`
+	MediaTypeID int    `json:"mediaTypeId"`
+}
+
+func (m axsMedia) imageURL() string {
+	if m.FileName != "" {
+		return m.FileName
+	}
+	return m.MediaHref
+}
+
 type axsEventItem struct {
-	ID         json.Number `json:"id"`
-	EventName  string      `json:"eventName"`
-	URLSlug    string      `json:"urlSlug"`
-	Date       string      `json:"date"`
-	VenueCity  string      `json:"venueCity"`
-	VenueTitle string      `json:"venueTitle"`
-	StatusID   int         `json:"statusId"`
+	ID           json.Number `json:"id"`
+	EventName    string      `json:"eventName"`
+	URLSlug      string      `json:"urlSlug"`
+	Date         string      `json:"date"`
+	VenueCity    string      `json:"venueCity"`
+	VenueTitle   string      `json:"venueTitle"`
+	StatusID     int         `json:"statusId"`
+	Media        []axsMedia  `json:"media"`
+	RelatedMedia []axsMedia  `json:"relatedMedia"`
 }
 
 type AXSMonitor struct {
@@ -177,13 +192,40 @@ func itemToEvent(item axsEventItem) (Event, bool) {
 		title = title + "\n" + location
 	}
 
+	media := item.Media
+	if len(media) == 0 {
+		media = item.RelatedMedia
+	}
 	return Event{
 		ID:        idStr,
 		Title:     title,
 		URL:       fmt.Sprintf("https://www.axs.com/events/%s/%s", idStr, slug),
 		Source:    "axs",
 		EventType: EventTypeSale,
+		ImageURL:  pickBestImage(media),
 	}, true
+}
+
+func pickBestImage(media []axsMedia) string {
+	for _, wantID := range []int{17, 18, 1} {
+		for _, m := range media {
+			if m.MediaTypeID == wantID {
+				if u := m.imageURL(); u != "" && !isPlaceholder(u) {
+					return u
+				}
+			}
+		}
+	}
+	for _, m := range media {
+		if u := m.imageURL(); u != "" && !isPlaceholder(u) {
+			return u
+		}
+	}
+	return ""
+}
+
+func isPlaceholder(url string) bool {
+	return strings.Contains(url, "/axs/bundles/aegaxs/images/defaults/")
 }
 
 func extractIDsFromHTML(html string) []string {

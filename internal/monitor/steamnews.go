@@ -75,7 +75,7 @@ func (m *SteamNewsMonitor) fetch() ([]steamNewsItem, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("steam news: status %d", resp.StatusCode)
 	}
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
 	if err != nil {
 		return nil, err
 	}
