@@ -132,7 +132,7 @@ func main() {
 	commands := tgbotapi.NewSetMyCommands(
 		tgbotapi.BotCommand{Command: "start", Description: "подписаться"},
 		tgbotapi.BotCommand{Command: "stop", Description: "отписаться"},
-		tgbotapi.BotCommand{Command: "faq", Description: "зачем это"},
+		tgbotapi.BotCommand{Command: "faq", Description: "познать истину"},
 	)
 	if _, err := bot.Request(commands); err != nil {
 		slog.Error("failed to set commands", "err", err)
