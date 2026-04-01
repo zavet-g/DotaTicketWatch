@@ -25,8 +25,8 @@ import (
 
 const checkCooldown = 60 * time.Second
 
-//go:embed faq_beacon.gif
-var faqBeaconGIF []byte
+//go:embed faq_beacon.mp4
+var faqBeaconMP4 []byte
 
 var moscow = func() *time.Location {
 	loc, err := time.LoadLocation("Europe/Moscow")
@@ -128,6 +128,13 @@ func main() {
 		os.Exit(1)
 	}
 	slog.Info("bot started", "username", bot.Self.UserName)
+
+	commands := tgbotapi.NewSetMyCommands(
+		tgbotapi.BotCommand{Command: "start", Description: "подписаться"},
+		tgbotapi.BotCommand{Command: "stop", Description: "отписаться"},
+		tgbotapi.BotCommand{Command: "faq", Description: "зачем это"},
+	)
+	bot.Send(commands)
 
 	ntf := notifier.NewTelegramNotifier(bot, store)
 	monitors := []monitor.Monitor{
@@ -525,30 +532,32 @@ func sendDirect(bot *tgbotapi.BotAPI, chatID int64, text string) {
 
 func sendFaq(bot *tgbotapi.BotAPI, chatID int64) {
 	parts := []string{
-		"<b>зачем это</b>\n\n<i>TI 2026 · шанхай · август</i>",
+		"<b>зачем это</b>\n\n" +
+			"<code>TI 2026 · шанхай · август</code>",
 
 		"ты хочешь быть в зале когда поднимут аегис.\n" +
-			"× <i>стрим. пересказ. клипы на следующий день.</i>\n" +
-			"· в зале.",
+			"<i>не на стриме. не в пересказе. не в клипах на следующий день.</i>\n" +
+			"<b>в зале.</b>",
 
 		"билеты появятся один раз и сгорят за минуты.\n" +
-			"ты в этот момент будешь спать. или работать. или жить.",
+			"<i>ты в этот момент будешь спать. или работать. или жить.</i>",
 
-		"а этот бот — нет.\n" +
+		"<b>а этот бот — нет.</b>\n" +
 			"он смотрит на AXS каждые пять минут.\n" +
 			"читает Valve раньше реддита.\n" +
 			"видит очередь до того как она дойдёт до тебя.",
 
 		"▸ когда ворота в шанхай откроются — здесь загорится свет.\n" +
-			"ты увидишь его первым.",
+			"<b>ты увидишь его первым.</b>",
 
-		"но билет не дарят — <b>его берут</b>. этот бой — твой.",
+		"но билет не дарят — <b>его берут</b>.\n" +
+			"<b>этот бой — твой.</b>",
 
-		"<i>нас мало. сюда не приходят случайно.</i>\n" +
-			"<b>этот бот — маяк. он горит для своих.</b>",
+		"<blockquote><i>нас мало. сюда не приходят случайно.</i>\n" +
+			"этот бот — <b>маяк</b>. он горит для своих.</blockquote>",
 	}
 
-	anim := tgbotapi.NewAnimation(chatID, tgbotapi.FileBytes{Name: "faq.gif", Bytes: faqBeaconGIF})
+	anim := tgbotapi.NewAnimation(chatID, tgbotapi.FileBytes{Name: "faq.mp4", Bytes: faqBeaconMP4})
 	anim.Caption = parts[0]
 	anim.ParseMode = tgbotapi.ModeHTML
 	initMsg, err := bot.Send(anim)
