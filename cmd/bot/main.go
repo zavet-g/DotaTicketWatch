@@ -129,7 +129,19 @@ func main() {
 	}
 	slog.Info("bot started", "username", bot.Self.UserName)
 
-	botCommands := []tgbotapi.BotCommand{
+	cleanScopes := []tgbotapi.BotCommandScope{
+		tgbotapi.NewBotCommandScopeDefault(),
+		tgbotapi.NewBotCommandScopeAllPrivateChats(),
+	}
+	if cfg.AdminChatID > 0 {
+		cleanScopes = append(cleanScopes, tgbotapi.NewBotCommandScopeChat(cfg.AdminChatID))
+	}
+	for _, scope := range cleanScopes {
+		del := tgbotapi.NewDeleteMyCommandsWithScope(scope)
+		bot.Request(del)
+	}
+
+	userCommands := []tgbotapi.BotCommand{
 		{Command: "start", Description: "подписаться"},
 		{Command: "stop", Description: "отписаться"},
 		{Command: "faq", Description: "познать истину"},
@@ -138,9 +150,21 @@ func main() {
 		tgbotapi.NewBotCommandScopeDefault(),
 		tgbotapi.NewBotCommandScopeAllPrivateChats(),
 	} {
-		cmd := tgbotapi.NewSetMyCommandsWithScope(scope, botCommands...)
+		cmd := tgbotapi.NewSetMyCommandsWithScope(scope, userCommands...)
 		if _, err := bot.Request(cmd); err != nil {
 			slog.Error("failed to set commands", "scope", scope.Type, "err", err)
+		}
+	}
+
+	if cfg.AdminChatID > 0 {
+		adminCommands := append(userCommands,
+			tgbotapi.BotCommand{Command: "check", Description: "проверить вручную"},
+			tgbotapi.BotCommand{Command: "status", Description: "статус системы"},
+		)
+		scope := tgbotapi.NewBotCommandScopeChat(cfg.AdminChatID)
+		cmd := tgbotapi.NewSetMyCommandsWithScope(scope, adminCommands...)
+		if _, err := bot.Request(cmd); err != nil {
+			slog.Error("failed to set admin commands", "err", err)
 		}
 	}
 
