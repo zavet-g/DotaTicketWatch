@@ -134,7 +134,9 @@ func main() {
 		tgbotapi.BotCommand{Command: "stop", Description: "отписаться"},
 		tgbotapi.BotCommand{Command: "faq", Description: "зачем это"},
 	)
-	bot.Send(commands)
+	if _, err := bot.Request(commands); err != nil {
+		slog.Error("failed to set commands", "err", err)
+	}
 
 	ntf := notifier.NewTelegramNotifier(bot, store)
 	monitors := []monitor.Monitor{
