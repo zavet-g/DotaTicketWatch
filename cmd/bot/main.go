@@ -129,13 +129,19 @@ func main() {
 	}
 	slog.Info("bot started", "username", bot.Self.UserName)
 
-	commands := tgbotapi.NewSetMyCommands(
-		tgbotapi.BotCommand{Command: "start", Description: "подписаться"},
-		tgbotapi.BotCommand{Command: "stop", Description: "отписаться"},
-		tgbotapi.BotCommand{Command: "faq", Description: "познать истину"},
-	)
-	if _, err := bot.Request(commands); err != nil {
-		slog.Error("failed to set commands", "err", err)
+	botCommands := []tgbotapi.BotCommand{
+		{Command: "start", Description: "подписаться"},
+		{Command: "stop", Description: "отписаться"},
+		{Command: "faq", Description: "познать истину"},
+	}
+	for _, scope := range []tgbotapi.BotCommandScope{
+		tgbotapi.NewBotCommandScopeDefault(),
+		tgbotapi.NewBotCommandScopeAllPrivateChats(),
+	} {
+		cmd := tgbotapi.NewSetMyCommandsWithScope(scope, botCommands...)
+		if _, err := bot.Request(cmd); err != nil {
+			slog.Error("failed to set commands", "scope", scope.Type, "err", err)
+		}
 	}
 
 	ntf := notifier.NewTelegramNotifier(bot, store)
