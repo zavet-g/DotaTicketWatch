@@ -18,6 +18,11 @@ type Config struct {
 	FlareSolverrURL string
 	LogLevel        string
 	DBPath          string
+
+	TravelpayoutsToken  string
+	TravelpayoutsMarker string
+	FlightsOrigins      []string
+	FlightsPollMin      int
 }
 
 func Load() (*Config, error) {
@@ -43,6 +48,21 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("POLL_INTERVAL_MINUTES must be >= 2, got %q", intervalStr)
 	}
 	cfg.PollIntervalMin = interval
+
+	cfg.TravelpayoutsToken = os.Getenv("TRAVELPAYOUTS_TOKEN")
+	cfg.TravelpayoutsMarker = os.Getenv("TRAVELPAYOUTS_MARKER")
+	if origins := os.Getenv("FLIGHTS_ORIGINS"); origins != "" {
+		for _, o := range strings.Split(origins, ",") {
+			if trimmed := strings.TrimSpace(o); trimmed != "" {
+				cfg.FlightsOrigins = append(cfg.FlightsOrigins, trimmed)
+			}
+		}
+	}
+	flightsPollStr := getEnvOrDefault("FLIGHTS_POLL_INTERVAL_MIN", "30")
+	cfg.FlightsPollMin, _ = strconv.Atoi(flightsPollStr)
+	if cfg.FlightsPollMin < 10 {
+		cfg.FlightsPollMin = 30
+	}
 
 	if err := cfg.validate(); err != nil {
 		return nil, err

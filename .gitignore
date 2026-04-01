@@ -13,8 +13,8 @@ data/
 
 # бинари · компилятор нагадил
 bin/
-bot
-dotaticketwatch
+/bot
+/dotaticketwatch
 cmd/*/[!.]*.go[!.]
 cmd/bot/bot
 cmd/check/check

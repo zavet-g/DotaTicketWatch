@@ -1,0 +1,236 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 338" width="900" height="338">
+
+  <rect width="900" height="338" fill="#0a0a0a"/>
+
+  <defs>
+    <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
+      <rect width="900" height="1" fill="rgba(255,255,255,0.02)"/>
+    </pattern>
+    <path id="arc" d="M 203,118 Q 450,30 698,197"/>
+    <style>
+      .fg   { animation: fg   15s linear infinite }
+      .arcs { animation: arcd 15s linear infinite }
+      .mskd { animation: mskp 2.4s ease-in-out infinite, fg 15s linear infinite }
+      .shad { animation: shap 15s linear infinite }
+      .lbl  { animation: lbla 15s linear infinite }
+      .meta { animation: meta 15s linear infinite }
+
+      @keyframes fg   { 0%,5%  { opacity:0 } 10%,72% { opacity:1 } 80%,100% { opacity:0 } }
+      @keyframes lbla { 0%,12% { opacity:0 } 17%,72% { opacity:1 } 80%,100% { opacity:0 } }
+      @keyframes meta { 0%,8%  { opacity:0 } 13%,72% { opacity:1 } 80%,100% { opacity:0 } }
+
+      @keyframes arcd {
+        0%,15%  { stroke-dashoffset: 600; opacity: 0 }
+        18%     { opacity: 1 }
+        38%     { stroke-dashoffset: 0 }
+        72%     { stroke-dashoffset: 0; opacity: 1 }
+        80%,100%{ stroke-dashoffset: 0; opacity: 0 }
+      }
+
+      @keyframes mskp {
+        0%  { opacity: 0.5 }
+        50% { opacity: 1.0 }
+        100%{ opacity: 0.5 }
+      }
+
+      @keyframes shap {
+        0%,64%  { opacity: 0.3 }
+        68%,72% { opacity: 1.0 }
+        80%,100%{ opacity: 0 }
+      }
+    </style>
+  </defs>
+
+  <rect width="900" height="338" fill="url(#scan)"/>
+
+  <g class="fg" opacity="0">
+    <line x1="0" y1="30"  x2="900" y2="30"  stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="60"  x2="900" y2="60"  stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="90"  x2="900" y2="90"  stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="120" x2="900" y2="120" stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="150" x2="900" y2="150" stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="180" x2="900" y2="180" stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="210" x2="900" y2="210" stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="240" x2="900" y2="240" stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="270" x2="900" y2="270" stroke="#151520" stroke-width="0.5"/>
+    <line x1="0" y1="300" x2="900" y2="300" stroke="#151520" stroke-width="0.5"/>
+    <line x1="30"  y1="0" x2="30"  y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="60"  y1="0" x2="60"  y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="90"  y1="0" x2="90"  y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="120" y1="0" x2="120" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="150" y1="0" x2="150" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="180" y1="0" x2="180" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="210" y1="0" x2="210" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="240" y1="0" x2="240" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="270" y1="0" x2="270" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="300" y1="0" x2="300" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="330" y1="0" x2="330" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="360" y1="0" x2="360" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="390" y1="0" x2="390" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="420" y1="0" x2="420" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="450" y1="0" x2="450" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="480" y1="0" x2="480" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="510" y1="0" x2="510" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="540" y1="0" x2="540" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="570" y1="0" x2="570" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="600" y1="0" x2="600" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="630" y1="0" x2="630" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="660" y1="0" x2="660" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="690" y1="0" x2="690" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="720" y1="0" x2="720" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="750" y1="0" x2="750" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="780" y1="0" x2="780" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="810" y1="0" x2="810" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="840" y1="0" x2="840" y2="338" stroke="#151520" stroke-width="0.5"/>
+    <line x1="870" y1="0" x2="870" y2="338" stroke="#151520" stroke-width="0.5"/>
+  </g>
+
+  <path class="arcs" d="M 203,118 Q 450,30 698,197"
+    fill="none" stroke="#2a2a2e" stroke-width="1"
+    stroke-dasharray="600" stroke-dashoffset="600"/>
+
+  <g class="fg" opacity="0">
+    <line x1="185" y1="100" x2="191" y2="100" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="185" y1="100" x2="185" y2="106" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="215" y1="100" x2="221" y2="100" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="221" y1="100" x2="221" y2="106" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="185" y1="130" x2="185" y2="136" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="185" y1="136" x2="191" y2="136" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="221" y1="130" x2="221" y2="136" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="215" y1="136" x2="221" y2="136" stroke="#2e2e35" stroke-width="1"/>
+  </g>
+
+  <g class="fg" opacity="0">
+    <line x1="680" y1="179" x2="686" y2="179" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="680" y1="179" x2="680" y2="185" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="710" y1="179" x2="716" y2="179" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="716" y1="179" x2="716" y2="185" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="680" y1="209" x2="680" y2="215" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="680" y1="215" x2="686" y2="215" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="716" y1="209" x2="716" y2="215" stroke="#2e2e35" stroke-width="1"/>
+    <line x1="710" y1="215" x2="716" y2="215" stroke="#2e2e35" stroke-width="1"/>
+  </g>
+
+  <circle class="mskd" cx="203" cy="118" r="3" fill="#aaa"/>
+
+  <circle class="shad" cx="698" cy="197" r="3" fill="#888"/>
+
+  <!-- comet glow: concentric circles, no filters, guaranteed round -->
+  <!-- glow ring 5 (outermost, faintest) -->
+  <circle r="20" fill="rgba(180,200,255,0.03)">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;1;1;1" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;1;1;0;0" keyTimes="0;0.38;0.40;0.66;0.72;1"/>
+  </circle>
+  <!-- glow ring 4 -->
+  <circle r="16" fill="rgba(180,200,255,0.05)">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;1;1;1" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;1;1;0;0" keyTimes="0;0.38;0.40;0.66;0.72;1"/>
+  </circle>
+  <!-- glow ring 3 -->
+  <circle r="12" fill="rgba(200,215,255,0.08)">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;1;1;1" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;1;1;0;0" keyTimes="0;0.38;0.40;0.66;0.72;1"/>
+  </circle>
+  <!-- glow ring 2 -->
+  <circle r="8" fill="rgba(220,230,255,0.12)">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;1;1;1" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;1;1;0;0" keyTimes="0;0.38;0.40;0.66;0.72;1"/>
+  </circle>
+  <!-- glow ring 1 (inner, brightest glow) -->
+  <circle r="5" fill="rgba(240,245,255,0.2)">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;1;1;1" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;1;1;0;0" keyTimes="0;0.38;0.40;0.66;0.72;1"/>
+  </circle>
+
+  <!-- comet trail: 6 dots behind the head, each delayed slightly -->
+  <!-- trail uses keyPoints offset so each dot is a fraction behind the head -->
+  <!-- trail 6 (farthest, faintest) -->
+  <circle r="1" fill="#333">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;0.88;0.88;0.88" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;0.3;0;0;0" keyTimes="0;0.38;0.40;0.64;0.72;1"/>
+  </circle>
+  <!-- trail 5 -->
+  <circle r="1.2" fill="#444">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;0.90;0.90;0.90" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;0.35;0;0;0" keyTimes="0;0.38;0.40;0.64;0.72;1"/>
+  </circle>
+  <!-- trail 4 -->
+  <circle r="1.5" fill="#555">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;0.93;0.93;0.93" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;0.4;0;0;0" keyTimes="0;0.38;0.40;0.64;0.72;1"/>
+  </circle>
+  <!-- trail 3 -->
+  <circle r="1.8" fill="#777">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;0.95;0.95;0.95" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;0.5;0;0;0" keyTimes="0;0.38;0.40;0.64;0.72;1"/>
+  </circle>
+  <!-- trail 2 -->
+  <circle r="2" fill="#999">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;0.97;0.97;0.97" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;0.6;0;0;0" keyTimes="0;0.38;0.40;0.64;0.72;1"/>
+  </circle>
+  <!-- trail 1 (closest to head) -->
+  <circle r="2.5" fill="#bbb">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;0.99;0.99;0.99" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;0.7;0;0;0" keyTimes="0;0.38;0.40;0.64;0.72;1"/>
+  </circle>
+
+  <!-- comet head -->
+  <circle r="3" fill="#fff">
+    <animateMotion dur="15s" repeatCount="indefinite"
+      path="M 203,118 Q 450,30 698,197"
+      keyPoints="0;0;0;1;1;1" keyTimes="0;0.38;0.40;0.66;0.72;1" calcMode="linear"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;1;1;0;0" keyTimes="0;0.38;0.40;0.66;0.72;1"/>
+  </circle>
+
+  <!-- arrival ring -->
+  <circle cx="698" cy="197" fill="none" stroke="#666" stroke-width="1.5">
+    <animate attributeName="r" dur="15s" repeatCount="indefinite"
+      values="4;4;4;4;30;30" keyTimes="0;0.64;0.66;0.72;0.80;1"/>
+    <animate attributeName="opacity" dur="15s" repeatCount="indefinite"
+      values="0;0;0.7;0.7;0;0" keyTimes="0;0.64;0.66;0.72;0.80;1"/>
+  </circle>
+
+  <text class="lbl" x="190" y="155" font-family="monospace" font-size="11" fill="#333">MSK</text>
+  <text class="lbl" x="685" y="234" font-family="monospace" font-size="11" fill="#333">SHA</text>
+
+  <text class="meta" x="20"  y="22"  font-family="monospace" font-size="11" fill="#333">&#x25B8;  дуга над облаками</text>
+  <text class="meta" x="700" y="22"  font-family="monospace" font-size="11" fill="#333">SVO &#x2192; PVG &#xB7; прямой</text>
+  <text class="meta" x="20"  y="328" font-family="monospace" font-size="11" fill="#333">москва &#x2014; шанхай</text>
+  <text class="meta" x="770" y="328" font-family="monospace" font-size="10" fill="#222">travelpayouts</text>
+
+</svg>

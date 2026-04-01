@@ -1,32 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 175" width="900" height="175">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 219" width="900" height="219">
 
-  <rect width="900" height="175" fill="#000"/>
+  <rect width="900" height="219" fill="#000"/>
 
   <defs>
     <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
       <rect width="900" height="1" fill="rgba(255,255,255,0.022)"/>
     </pattern>
     <style>
-      .c1   { animation: cmd1  12s linear infinite }
-      .c2   { animation: cmd2  12s linear infinite }
-      .cdiv { animation: cdiv  12s linear infinite }
-      .c3   { animation: cmd3  12s linear infinite }
-      .c4   { animation: cmd4  12s linear infinite }
-      .note { animation: cnote 12s linear infinite }
+      .c1     { animation: cmd1    12s linear infinite }
+      .c2     { animation: cmd2    12s linear infinite }
+      .c3     { animation: cmd3    12s linear infinite }
+      .c4     { animation: cmd4    12s linear infinite }
+      .cdiv   { animation: cdiv   12s linear infinite }
+      .c5     { animation: cmd5   12s linear infinite }
+      .c6     { animation: cmd6   12s linear infinite }
+      .note   { animation: cnote  12s linear infinite }
 
-      @keyframes cmd1  { 0%,3%  { opacity:0 } 8%,68%  { opacity:1 } 76%,100% { opacity:0 } }
-      @keyframes cmd2  { 0%,13% { opacity:0 } 18%,68% { opacity:1 } 76%,100% { opacity:0 } }
-      @keyframes cdiv  { 0%,22% { opacity:0 } 26%,68% { opacity:1 } 76%,100% { opacity:0 } }
-      @keyframes cmd3  { 0%,26% { opacity:0 } 31%,68% { opacity:1 } 76%,100% { opacity:0 } }
-      @keyframes cmd4  { 0%,36% { opacity:0 } 41%,68% { opacity:1 } 76%,100% { opacity:0 } }
-      @keyframes cnote { 0%,45% { opacity:0 } 50%,68% { opacity:1 } 76%,100% { opacity:0 } }
+      @keyframes cmd1  { 0%,3%  { opacity:0 } 8%,62%  { opacity:1 } 70%,100% { opacity:0 } }
+      @keyframes cmd2  { 0%,10% { opacity:0 } 15%,62% { opacity:1 } 70%,100% { opacity:0 } }
+      @keyframes cmd3  { 0%,17% { opacity:0 } 22%,62% { opacity:1 } 70%,100% { opacity:0 } }
+      @keyframes cmd4  { 0%,24% { opacity:0 } 29%,62% { opacity:1 } 70%,100% { opacity:0 } }
+      @keyframes cdiv  { 0%,30% { opacity:0 } 34%,62% { opacity:1 } 70%,100% { opacity:0 } }
+      @keyframes cmd5  { 0%,34% { opacity:0 } 39%,62% { opacity:1 } 70%,100% { opacity:0 } }
+      @keyframes cmd6  { 0%,41% { opacity:0 } 46%,62% { opacity:1 } 70%,100% { opacity:0 } }
+      @keyframes cnote { 0%,50% { opacity:0 } 55%,62% { opacity:1 } 70%,100% { opacity:0 } }
     </style>
   </defs>
 
-  <rect width="900" height="175" fill="url(#scan)"/>
+  <rect width="900" height="219" fill="url(#scan)"/>
 
   <!-- left edge mark -->
-  <line x1="32" y1="14" x2="32" y2="161" stroke="#111" stroke-width="1"/>
+  <line x1="32" y1="14" x2="32" y2="205" stroke="#111" stroke-width="1"/>
 
   <!-- /start -->
   <text class="c1" x="46" y="42" font-family="monospace" font-size="12">
@@ -38,22 +42,32 @@
     <tspan fill="#555">/stop    </tspan><tspan fill="#3a3a3a">—  отписаться</tspan>
   </text>
 
+  <!-- /flight -->
+  <text class="c3" x="46" y="86" font-family="monospace" font-size="12">
+    <tspan fill="#555">/flight  </tspan><tspan fill="#3a3a3a">—  перелёт в шанхай</tspan>
+  </text>
+
+  <!-- /faq -->
+  <text class="c4" x="46" y="108" font-family="monospace" font-size="12">
+    <tspan fill="#555">/faq     </tspan><tspan fill="#3a3a3a">—  познать истину</tspan>
+  </text>
+
   <!-- divider -->
-  <text class="cdiv" x="46" y="82" font-family="monospace" font-size="11" fill="#1c1c1c">─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─</text>
+  <text class="cdiv" x="46" y="126" font-family="monospace" font-size="11" fill="#1c1c1c">─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─  ─</text>
 
   <!-- /check -->
-  <text class="c3" x="46" y="104" font-family="monospace" font-size="12">
+  <text class="c5" x="46" y="148" font-family="monospace" font-size="12">
     <tspan fill="#666">/check   </tspan><tspan fill="#444">—  проверить вручную</tspan>
   </text>
-  <text class="c3" x="780" y="104" font-family="monospace" font-size="11" fill="#282828">admin</text>
+  <text class="c5" x="780" y="148" font-family="monospace" font-size="11" fill="#282828">admin</text>
 
   <!-- /status -->
-  <text class="c4" x="46" y="126" font-family="monospace" font-size="12">
-    <tspan fill="#666">/status  </tspan><tspan fill="#444">—  статус системы · uptime · poll</tspan>
+  <text class="c6" x="46" y="170" font-family="monospace" font-size="12">
+    <tspan fill="#666">/status  </tspan><tspan fill="#444">—  статус системы · uptime · poll · авиабилеты</tspan>
   </text>
-  <text class="c4" x="780" y="126" font-family="monospace" font-size="11" fill="#282828">admin</text>
+  <text class="c6" x="780" y="170" font-family="monospace" font-size="11" fill="#282828">admin</text>
 
   <!-- note -->
-  <text class="note" x="46" y="155" font-family="monospace" font-size="11" fill="#1e1e1e">admin команды видны только тебе · scoped через setMyCommands · chat_id</text>
+  <text class="note" x="46" y="199" font-family="monospace" font-size="11" fill="#1e1e1e">admin команды видны только тебе · scoped через setMyCommands · chat_id</text>
 
 </svg>
