@@ -1,30 +1,71 @@
-# Environment — contains secrets, never commit
+# секреты · сюда не смотри
 .env
+.env.*
+*.pem
+*.key
 
-# Runtime database
+# данные · то что живёт только на сервере
 data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
 
-# Compiled binaries
+# бинари · компилятор нагадил
 bin/
+bot
 dotaticketwatch
+cmd/*/[!.]*.go[!.]
 cmd/bot/bot
 cmd/check/check
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
-# Go test artifacts
+# тесты · следы вскрытия
 *.test
 *.out
+*.prof
 coverage.html
+coverage.txt
 
-# macOS
+# go · модульный мусор
+vendor/.tmp/
+*.sum.bak
+
+# docker · чужие внутренности
+docker-compose.override.yml
+
+# os · невидимая грязь
 .DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# JetBrains IDEs
+# ide · каждый таскает своё
 .idea/
-
-# VS Code
+*.iml
 .vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
 
-# артефакты проекта
+# ии · артефакты нечеловеческого разума
 PLAN.md
 CLAUDE.md
 .claude/
+.cursor/
+.aider*
+.copilot/
+
+# tmp · всё что не должно было родиться
+*.tmp
+*.bak
+*.log
