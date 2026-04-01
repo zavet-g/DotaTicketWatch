@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 	"log/slog"
 	"math/rand/v2"
@@ -23,6 +24,9 @@ import (
 )
 
 const checkCooldown = 60 * time.Second
+
+//go:embed faq_beacon.gif
+var faqBeaconGIF []byte
 
 var moscow = func() *time.Location {
 	loc, err := time.LoadLocation("Europe/Moscow")
@@ -354,6 +358,10 @@ func handleCommand(
 		}()
 		return
 
+	case "faq":
+		go sendFaq(bot, chatID)
+		return
+
 	default:
 		return
 	}
@@ -513,6 +521,53 @@ func sendDirect(bot *tgbotapi.BotAPI, chatID int64, text string) {
 	if _, err := bot.Send(msg); err != nil {
 		slog.Warn("sendDirect failed", "chat_id", chatID, "err", err)
 	}
+}
+
+func sendFaq(bot *tgbotapi.BotAPI, chatID int64) {
+	parts := []string{
+		"<b>зачем это</b>\n\n<i>TI 2026 · шанхай · август</i>",
+
+		"ты хочешь быть в зале когда поднимут аегис.\n" +
+			"× <i>стрим. пересказ. клипы на следующий день.</i>\n" +
+			"· в зале.",
+
+		"билеты появятся один раз и сгорят за минуты.\n" +
+			"ты в этот момент будешь спать. или работать. или жить.",
+
+		"а этот бот — нет.\n" +
+			"он смотрит на AXS каждые пять минут.\n" +
+			"читает Valve раньше реддита.\n" +
+			"видит очередь до того как она дойдёт до тебя.",
+
+		"▸ когда ворота в шанхай откроются — здесь загорится свет.\n" +
+			"ты увидишь его первым.",
+
+		"но билет не дарят — <b>его берут</b>. этот бой — твой.",
+
+		"<i>нас мало. сюда не приходят случайно.</i>\n" +
+			"<b>этот бот — маяк. он горит для своих.</b>",
+	}
+
+	anim := tgbotapi.NewAnimation(chatID, tgbotapi.FileBytes{Name: "faq.gif", Bytes: faqBeaconGIF})
+	anim.Caption = parts[0]
+	anim.ParseMode = tgbotapi.ModeHTML
+	initMsg, err := bot.Send(anim)
+	if err != nil {
+		return
+	}
+
+	caption := parts[0]
+	for i := 1; i < len(parts); i++ {
+		time.Sleep(time.Second)
+		caption += "\n\n" + parts[i]
+		editCaption(bot, chatID, initMsg.MessageID, caption)
+	}
+}
+
+func editCaption(bot *tgbotapi.BotAPI, chatID int64, msgID int, caption string) {
+	edit := tgbotapi.NewEditMessageCaption(chatID, msgID, caption)
+	edit.ParseMode = tgbotapi.ModeHTML
+	_, _ = bot.Send(edit)
 }
 
 func editMessage(bot *tgbotapi.BotAPI, chatID int64, msgID int, text string) {
