@@ -10,12 +10,9 @@ import (
 )
 
 type flareSolverrRequest struct {
-	Cmd               string `json:"cmd"`
-	URL               string `json:"url"`
-	MaxTimeout        int    `json:"maxTimeout"`
-	Session           string `json:"session"`
-	SessionTTLMinutes int    `json:"session_ttl_minutes"`
-	DisableMedia      bool   `json:"disableMedia"`
+	Cmd        string `json:"cmd"`
+	URL        string `json:"url"`
+	MaxTimeout int    `json:"maxTimeout"`
 }
 
 type flareSolverrSolution struct {
@@ -33,12 +30,9 @@ var flareSolverrHTTPClient = &http.Client{Timeout: 150 * time.Second}
 
 func fetchFlareSolverr(url, baseURL string) (string, error) {
 	payload, _ := json.Marshal(flareSolverrRequest{
-		Cmd:               "request.get",
-		URL:               url,
-		MaxTimeout:        120000,
-		Session:           "axs-monitor",
-		SessionTTLMinutes: 30,
-		DisableMedia:      true,
+		Cmd:        "request.get",
+		URL:        url,
+		MaxTimeout: 120000,
 	})
 
 	resp, err := flareSolverrHTTPClient.Post(baseURL+"/v1", "application/json", bytes.NewReader(payload))
@@ -54,7 +48,11 @@ func fetchFlareSolverr(url, baseURL string) (string, error) {
 
 	var fsResp flareSolverrResponse
 	if err := json.Unmarshal(raw, &fsResp); err != nil {
-		return "", fmt.Errorf("flaresolverr parse response: %w", err)
+		preview := string(raw)
+		if len(preview) > 200 {
+			preview = preview[:200]
+		}
+		return "", fmt.Errorf("flaresolverr returned non-JSON (HTTP %d): %s", resp.StatusCode, preview)
 	}
 	if fsResp.Status != "ok" {
 		return "", fmt.Errorf("flaresolverr error: %s", fsResp.Message)
