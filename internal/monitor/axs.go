@@ -124,6 +124,9 @@ func extractAXSEvents(html string) ([]Event, error) {
 			})
 			return events, nil
 		}
+		if len(extractIDsFromHTML(html)) == 0 {
+			return nil, fmt.Errorf("axs page anomaly: no __NEXT_DATA__, no queue-it, no event IDs")
+		}
 	}
 
 	for _, id := range extractIDsFromHTML(html) {

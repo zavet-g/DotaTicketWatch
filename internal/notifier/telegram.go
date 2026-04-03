@@ -26,13 +26,19 @@ func (n *TelegramNotifier) Notify(event monitor.Event) error {
 	if err != nil {
 		return fmt.Errorf("load subscribers: %w", err)
 	}
+	var failed int
 	for _, sub := range subs {
 		if event.ImageURL != "" {
 			if n.trySendPhoto(sub.ChatID, event.ImageURL, text) {
 				continue
 			}
 		}
-		n.sendText(sub.ChatID, text)
+		if !n.sendText(sub.ChatID, text) {
+			failed++
+		}
+	}
+	if failed > 0 {
+		return fmt.Errorf("send failed for %d/%d subscribers", failed, len(subs))
 	}
 	return nil
 }
@@ -42,8 +48,14 @@ func (n *TelegramNotifier) NotifyText(text string) error {
 	if err != nil {
 		return fmt.Errorf("load subscribers: %w", err)
 	}
+	var failed int
 	for _, sub := range subs {
-		n.sendText(sub.ChatID, text)
+		if !n.sendText(sub.ChatID, text) {
+			failed++
+		}
+	}
+	if failed > 0 {
+		return fmt.Errorf("send failed for %d/%d subscribers", failed, len(subs))
 	}
 	return nil
 }
@@ -59,13 +71,15 @@ func (n *TelegramNotifier) trySendPhoto(chatID int64, imageURL, caption string) 
 	return true
 }
 
-func (n *TelegramNotifier) sendText(chatID int64, text string) {
+func (n *TelegramNotifier) sendText(chatID int64, text string) bool {
 	msg := tgbotapi.NewMessage(chatID, text)
 	msg.ParseMode = tgbotapi.ModeHTML
 	msg.DisableWebPagePreview = true
 	if _, err := n.bot.Send(msg); err != nil {
 		slog.Warn("failed to send notification", "chat_id", chatID, "err", err)
+		return false
 	}
+	return true
 }
 
 func formatEvent(e monitor.Event) string {

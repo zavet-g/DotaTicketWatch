@@ -144,10 +144,11 @@ var moscow = func() *time.Location {
 }()
 
 type monitorStat struct {
-	lastCheckAt time.Time
-	lastErr     error
-	lastErrText string
-	lastCount   int
+	lastCheckAt    time.Time
+	lastErr        error
+	lastErrText    string
+	lastCount      int
+	consecutiveFails int
 }
 
 type appState struct {
@@ -164,6 +165,8 @@ func newAppState() *appState {
 	}
 }
 
+const adminRenotifyEvery = 10
+
 func (s *appState) updateAndCheck(name string, err error, count int) (shouldNotify, wasError bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -177,7 +180,18 @@ func (s *appState) updateAndCheck(name string, err error, count int) (shouldNoti
 		newErrText = err.Error()
 	}
 	wasError = st.lastErrText != ""
-	shouldNotify = newErrText != st.lastErrText
+	changed := newErrText != st.lastErrText
+	if newErrText != "" {
+		if changed {
+			st.consecutiveFails = 1
+		} else {
+			st.consecutiveFails++
+		}
+		shouldNotify = changed || st.consecutiveFails%adminRenotifyEvery == 0
+	} else {
+		st.consecutiveFails = 0
+		shouldNotify = changed
+	}
 	st.lastCheckAt = time.Now()
 	st.lastErr = err
 	st.lastErrText = newErrText
