@@ -683,8 +683,7 @@ func buildStatusText(cfg *config.Config, store *storage.Storage, monitors []moni
 
 func flareSolverrOK(url string) bool {
 	client := &http.Client{Timeout: 3 * time.Second}
-	resp, err := client.Post(url+"/v1", "application/json",
-		strings.NewReader(`{"cmd":"sessions.list"}`))
+	resp, err := client.Get(url + "/health")
 	if err != nil {
 		return false
 	}
