@@ -24,7 +24,10 @@ func TestParseNextData_Valid(t *testing.T) {
 	item := axsEventItem{ID: json.Number("916200"), EventName: "The International 2026"}
 	html := makeNextDataHTML([]axsEventItem{item}, nil, nil)
 
-	nd := parseNextData(html)
+	nd, err := parseNextData(html)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if nd == nil {
 		t.Fatal("expected non-nil result")
 	}
@@ -35,15 +38,20 @@ func TestParseNextData_Valid(t *testing.T) {
 }
 
 func TestParseNextData_NoScriptTag(t *testing.T) {
-	if parseNextData("<html><body>nothing</body></html>") != nil {
-		t.Error("expected nil when no __NEXT_DATA__ script tag")
+	nd, err := parseNextData("<html><body>nothing</body></html>")
+	if nd != nil || err != nil {
+		t.Error("expected nil, nil when no __NEXT_DATA__ script tag")
 	}
 }
 
 func TestParseNextData_InvalidJSON(t *testing.T) {
 	html := `<script id="__NEXT_DATA__" type="application/json">{bad json}</script>`
-	if parseNextData(html) != nil {
-		t.Error("expected nil for invalid JSON")
+	nd, err := parseNextData(html)
+	if nd != nil {
+		t.Error("expected nil result for invalid JSON")
+	}
+	if err == nil {
+		t.Error("expected error for invalid JSON")
 	}
 }
 
@@ -136,17 +144,14 @@ func TestExtractAXSEvents_NoDuplicatesAcrossSources(t *testing.T) {
 }
 
 func TestExtractAXSEvents_EmptyPage(t *testing.T) {
-	events, err := extractAXSEvents("<html><body>No events yet</body></html>")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if len(events) != 0 {
-		t.Errorf("expected 0 events, got %d", len(events))
+	_, err := extractAXSEvents("<html><head><link href=\"https://axs.com\"></head><body>No events yet</body></html>")
+	if err == nil {
+		t.Fatal("expected anomaly error for page without __NEXT_DATA__ and no event IDs")
 	}
 }
 
 func TestExtractAXSEvents_QueueItActive(t *testing.T) {
-	html := `<html><body>
+	html := `<html><head><link href="https://axs.com"></head><body>
 		<div id="queueit-overlay">You are currently in line</div>
 	</body></html>`
 	events, err := extractAXSEvents(html)
@@ -219,7 +224,7 @@ func TestAXSMonitor_Check_FetchError(t *testing.T) {
 
 func TestAXSMonitor_Check_NoEvents(t *testing.T) {
 	mockFetch := func(url, _ string) (string, error) {
-		return "<html><body>No events yet</body></html>", nil
+		return makeNextDataHTML(nil, nil, nil), nil
 	}
 	m := NewAXSMonitor("https://axs.com/hub", "", mockFetch)
 	events, err := m.Check()

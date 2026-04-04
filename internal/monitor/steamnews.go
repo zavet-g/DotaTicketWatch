@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -16,6 +17,12 @@ var ticketSignals = []string{
 
 var eventSignals = []string{
 	"the international", "ti 2026", "ti2026",
+}
+
+var steamImagePatterns = []*regexp.Regexp{
+	regexp.MustCompile(`\[img\](https?://[^\]\s]+)\[/img\]`),
+	regexp.MustCompile(`\[img\]\{STEAM_CLAN_IMAGE\}/(\S+)\[/img\]`),
+	regexp.MustCompile(`<img[^>]+src="(https?://[^"]+)"`),
 }
 
 type steamNewsItem struct {
@@ -59,6 +66,7 @@ func (m *SteamNewsMonitor) Check() ([]Event, error) {
 				URL:       item.URL,
 				Source:    "steam",
 				EventType: EventTypeAnnouncement,
+				ImageURL:  extractSteamImage(item.Contents),
 			})
 		}
 	}
@@ -84,6 +92,21 @@ func (m *SteamNewsMonitor) fetch() ([]steamNewsItem, error) {
 		return nil, fmt.Errorf("steam news parse: %w", err)
 	}
 	return result.Appnews.NewsItems, nil
+}
+
+const steamClanImageBase = "https://clan.akamai.steamstatic.com/images/"
+
+func extractSteamImage(contents string) string {
+	for _, re := range steamImagePatterns {
+		if m := re.FindStringSubmatch(contents); m != nil {
+			url := m[1]
+			if !strings.HasPrefix(url, "http") {
+				url = steamClanImageBase + url
+			}
+			return url
+		}
+	}
+	return ""
 }
 
 func isTicketNews(title, contents string) bool {
