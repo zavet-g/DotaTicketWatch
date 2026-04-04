@@ -28,17 +28,19 @@ type flareSolverrResponse struct {
 
 var flareSolverrHTTPClient = &http.Client{Timeout: 150 * time.Second}
 
-const flareSolverrRetries = 2
+const flareSolverrRetries = 3
 
 func fetchFlareSolverr(url, baseURL string) (string, error) {
 	var lastErr error
-	for range flareSolverrRetries {
+	for i := range flareSolverrRetries {
 		html, err := fetchFlareSolverrOnce(url, baseURL)
 		if err == nil {
 			return html, nil
 		}
 		lastErr = err
-		time.Sleep(3 * time.Second)
+		if i < flareSolverrRetries-1 {
+			time.Sleep(time.Duration(5*(i+1)) * time.Second)
+		}
 	}
 	return "", lastErr
 }
