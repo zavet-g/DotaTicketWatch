@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand/v2"
-	"net/http"
 	"os"
 	"os/signal"
 	"strings"
@@ -653,7 +652,7 @@ func buildStatusText(cfg *config.Config, store *storage.Storage, monitors []moni
 	}
 
 	sb.WriteString("\n<b>инфраструктура</b>\n")
-	if flareSolverrOK(cfg.FlareSolverrURL) {
+	if axsStat, ok := st.get("AXS"); ok && axsStat.lastErr == nil {
 		sb.WriteString("· FlareSolverr\n")
 	} else {
 		sb.WriteString("× FlareSolverr — недоступен\n")
@@ -695,16 +694,6 @@ func buildStatusText(cfg *config.Config, store *storage.Storage, monitors []moni
 	return sb.String()
 }
 
-func flareSolverrOK(url string) bool {
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Post(url+"/v1", "application/json",
-		strings.NewReader(`{"cmd":"sessions.list"}`))
-	if err != nil {
-		return false
-	}
-	resp.Body.Close()
-	return true
-}
 
 func formatDuration(d time.Duration) string {
 	h := int(d.Hours())
