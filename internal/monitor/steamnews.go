@@ -96,6 +96,16 @@ func (m *SteamNewsMonitor) fetch() ([]steamNewsItem, error) {
 
 const steamClanImageBase = "https://clan.akamai.steamstatic.com/images/"
 
+var trustedImageHosts = []string{
+	"clan.akamai.steamstatic.com",
+	"cdn.cloudflare.steamstatic.com",
+	"clan.cloudflare.steamstatic.com",
+	"steamcdn-a.akamaihd.net",
+	"store.steampowered.com",
+	"cdn.dota2.com",
+	"www.dota2.com",
+}
+
 func extractSteamImage(contents string) string {
 	for _, re := range steamImagePatterns {
 		if m := re.FindStringSubmatch(contents); m != nil {
@@ -103,10 +113,22 @@ func extractSteamImage(contents string) string {
 			if !strings.HasPrefix(url, "http") {
 				url = steamClanImageBase + url
 			}
-			return url
+			if isTrustedImageHost(url) {
+				return url
+			}
 		}
 	}
 	return ""
+}
+
+func isTrustedImageHost(url string) bool {
+	lower := strings.ToLower(url)
+	for _, host := range trustedImageHosts {
+		if strings.Contains(lower, host) {
+			return true
+		}
+	}
+	return false
 }
 
 func isTicketNews(title, contents string) bool {
