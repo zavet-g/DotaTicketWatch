@@ -368,8 +368,20 @@ func runChecks(
 				if store.AlreadyNotified(event.ID) {
 					continue
 				}
-				if err2 := ntf.Notify(event); err2 != nil {
-					slog.Error("notify failed", "event_id", event.ID, "err", err2)
+				adminFn(fmt.Sprintf("▸ <b>%s</b> · найдено событие\n<code>%s</code>\n%s", m.Name(), event.ID, event.Title))
+				var notified bool
+				for attempt := range 3 {
+					if err2 := ntf.Notify(event); err2 != nil {
+						slog.Error("notify failed", "event_id", event.ID, "attempt", attempt+1, "err", err2)
+						adminFn(fmt.Sprintf("× отправка не прошла · попытка %d/3\n<code>%v</code>", attempt+1, err2))
+						time.Sleep(5 * time.Second)
+						continue
+					}
+					notified = true
+					break
+				}
+				if !notified {
+					adminFn(fmt.Sprintf("🚨 <b>КРИТИЧНО</b> · событие %s не доставлено после 3 попыток", event.ID))
 					continue
 				}
 				if err2 := store.MarkNotified(event.ID); err2 != nil {

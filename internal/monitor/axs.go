@@ -86,11 +86,27 @@ func (m *AXSMonitor) Check() ([]Event, error) {
 	return extractAXSEvents(html)
 }
 
+func looksLikeAXS(html string) bool {
+	lower := strings.ToLower(html)
+	return strings.Contains(lower, "axs.com") ||
+		strings.Contains(lower, "__next_data__") ||
+		strings.Contains(lower, "axs-event") ||
+		strings.Contains(lower, "performereventsdata")
+}
+
 func extractAXSEvents(html string) ([]Event, error) {
+	if !looksLikeAXS(html) {
+		return nil, fmt.Errorf("axs page anomaly: HTML not from axs.com")
+	}
+
 	seen := make(map[string]bool)
 	var events []Event
 
-	if nd := parseNextData(html); nd != nil {
+	nd, ndErr := parseNextData(html)
+	if ndErr != nil {
+		return nil, ndErr
+	}
+	if nd != nil {
 		pp := nd.Props.PageProps
 
 		for _, item := range pp.PerformerEventsData.EventItems {
@@ -145,16 +161,16 @@ func extractAXSEvents(html string) ([]Event, error) {
 	return events, nil
 }
 
-func parseNextData(html string) *axsNextData {
+func parseNextData(html string) (*axsNextData, error) {
 	m := axsNextDataRegex.FindStringSubmatch(html)
 	if m == nil {
-		return nil
+		return nil, nil
 	}
 	var nd axsNextData
 	if err := json.Unmarshal([]byte(m[1]), &nd); err != nil {
-		return nil
+		return nil, fmt.Errorf("__NEXT_DATA__ found but JSON broken: %w", err)
 	}
-	return &nd
+	return &nd, nil
 }
 
 func isQueueItActive(html string) bool {

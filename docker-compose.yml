@@ -17,12 +17,22 @@ services:
     image: ghcr.io/thephaseless/byparr:latest
     restart: unless-stopped
     init: true
-    mem_limit: 1g
+    shm_size: 2g
+    mem_limit: 2g
     profiles:
       - flaresolverr
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8191/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
-      start_period: 30s
+      test: ["CMD-SHELL", "curl -sf http://localhost:8191/health || kill 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  autoheal:
+    image: willfarrell/autoheal
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+      - AUTOHEAL_INTERVAL=30
