@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 251" width="900" height="251">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 269" width="900" height="269">
 
-  <rect width="900" height="251" fill="#000"/>
+  <rect width="900" height="269" fill="#000"/>
 
   <defs>
     <pattern id="scan" x="0" y="0" width="900" height="4" patternUnits="userSpaceOnUse">
@@ -21,6 +21,7 @@
       .ln11{animation:aln11 15s linear infinite}
       .ln12{animation:aln12 15s linear infinite}
       .ln13{animation:aln13 15s linear infinite}
+      .ln14{animation:aln14 15s linear infinite}
 
       .t0{animation:at0 15s linear infinite}
       .t1{animation:at1 15s linear infinite}
@@ -34,6 +35,7 @@
       .t9{animation:at9 15s linear infinite}
       .t10{animation:at10 15s linear infinite}
       .t11{animation:at11 15s linear infinite}
+      .t12{animation:at12 15s linear infinite}
 
       @keyframes aln0{0%,2%{stroke-dashoffset:89;opacity:1}12%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:89;opacity:0}}
       @keyframes aln1{0%,6%{stroke-dashoffset:36;opacity:1}8%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:36;opacity:0}}
@@ -41,7 +43,7 @@
       @keyframes aln3{0%,11%{stroke-dashoffset:30;opacity:1}13%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
       @keyframes aln4{0%,13%{stroke-dashoffset:30;opacity:1}15%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
       @keyframes aln5{0%,11%{stroke-dashoffset:36;opacity:1}13%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:36;opacity:0}}
-      @keyframes aln6{0%,13%{stroke-dashoffset:126;opacity:1}27%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:126;opacity:0}}
+      @keyframes aln6{0%,13%{stroke-dashoffset:144;opacity:1}27%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:144;opacity:0}}
       @keyframes aln7{0%,15%{stroke-dashoffset:30;opacity:1}17%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
       @keyframes aln8{0%,18%{stroke-dashoffset:30;opacity:1}20%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
       @keyframes aln9{0%,21%{stroke-dashoffset:30;opacity:1}23%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
@@ -49,6 +51,7 @@
       @keyframes aln11{0%,27%{stroke-dashoffset:30;opacity:1}29%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
       @keyframes aln12{0%,30%{stroke-dashoffset:30;opacity:1}32%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
       @keyframes aln13{0%,33%{stroke-dashoffset:30;opacity:1}35%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
+      @keyframes aln14{0%,36%{stroke-dashoffset:30;opacity:1}38%{stroke-dashoffset:0;opacity:1}67%{stroke-dashoffset:0;opacity:1}73%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:30;opacity:0}}
 
       @keyframes at0{0%{opacity:0}2%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
       @keyframes at1{0%,8%{opacity:0}10%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
@@ -62,10 +65,11 @@
       @keyframes at9{0%,29%{opacity:0}31%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
       @keyframes at10{0%,32%{opacity:0}34%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
       @keyframes at11{0%,35%{opacity:0}37%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
+      @keyframes at12{0%,38%{opacity:0}40%{opacity:1}67%{opacity:1}73%{opacity:0}100%{opacity:0}}
     </style>
   </defs>
 
-  <rect width="900" height="251" fill="url(#scan)"/>
+  <rect width="900" height="269" fill="url(#scan)"/>
 
   <!-- trunk: root → internal -->
   <line class="ln0" x1="50" y1="35" x2="50" y2="106"
@@ -98,9 +102,9 @@
     stroke-dasharray="36" stroke-dashoffset="36"/>
 
   <!-- V: internal subtree -->
-  <line class="ln6" x1="86" y1="106" x2="86" y2="232"
+  <line class="ln6" x1="86" y1="106" x2="86" y2="250"
     stroke="#1c1c1c" stroke-width="1" fill="none"
-    stroke-dasharray="126" stroke-dashoffset="126"/>
+    stroke-dasharray="144" stroke-dashoffset="144"/>
 
   <!-- H branches: internal children -->
   <line class="ln7"  x1="86" y1="124" x2="116" y2="124" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
@@ -110,6 +114,7 @@
   <line class="ln11" x1="86" y1="196" x2="116" y2="196" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
   <line class="ln12" x1="86" y1="214" x2="116" y2="214" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
   <line class="ln13" x1="86" y1="232" x2="116" y2="232" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
+  <line class="ln14" x1="86" y1="250" x2="116" y2="250" stroke="#1c1c1c" stroke-width="1" fill="none" stroke-dasharray="30" stroke-dashoffset="30"/>
 
   <!-- root -->
   <text class="t0" x="40" y="36"
@@ -188,6 +193,13 @@
     font-family="monospace" font-size="12">
     <tspan fill="#444">yuan/</tspan>
     <tspan fill="#222">  ·  MOEX ISS · CNYRUB_TOM · cache</tspan>
+  </text>
+
+  <!-- weather/ -->
+  <text class="t12" x="120" y="254"
+    font-family="monospace" font-size="12">
+    <tspan fill="#444">weather/</tspan>
+    <tspan fill="#222">  ·  open-meteo · WMO codes · cache</tspan>
   </text>
 
 </svg>

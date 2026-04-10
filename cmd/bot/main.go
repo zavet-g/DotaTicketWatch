@@ -21,6 +21,7 @@ import (
 	"github.com/artem/dotaticketwatch/internal/monitor"
 	"github.com/artem/dotaticketwatch/internal/notifier"
 	"github.com/artem/dotaticketwatch/internal/storage"
+	"github.com/artem/dotaticketwatch/internal/weather"
 	"github.com/artem/dotaticketwatch/internal/yuan"
 )
 
@@ -39,6 +40,9 @@ var flightArcMP4 []byte
 
 //go:embed yuan_chart.mp4
 var yuanChartMP4 []byte
+
+//go:embed weather_sky.mp4
+var weatherSkyMP4 []byte
 
 type pendingDateReq struct {
 	messageID   int
@@ -270,6 +274,7 @@ func main() {
 		{Command: "stop", Description: "отписаться"},
 		{Command: "flight", Description: "перелёт в шанхай"},
 		{Command: "yuan", Description: "курс юаня"},
+		{Command: "weather", Description: "погода в шанхае"},
 		{Command: "faq", Description: "познать истину"},
 	}
 	for _, scope := range []tgbotapi.BotCommandScope{
@@ -311,6 +316,7 @@ func main() {
 	}
 
 	yuanCache := yuan.NewCache(moscow)
+	weatherCache := weather.NewCache()
 
 	adminFn := func(text string) {
 		if cfg.AdminChatID == 0 {
@@ -326,12 +332,13 @@ func main() {
 		go flightsCache.Start(ctx)
 	}
 	go yuanCache.Start(ctx)
+	go weatherCache.Start(ctx)
 
 	var checkMu sync.Mutex
 	var lastCheck sync.Map
 
 	go runPolling(ctx, cfg, monitors, ntf, store, st, adminFn, &checkMu)
-	go runBotCommands(ctx, bot, cfg, store, monitors, ntf, st, adminFn, &checkMu, &lastCheck, flightsCache, fst, yuanCache)
+	go runBotCommands(ctx, bot, cfg, store, monitors, ntf, st, adminFn, &checkMu, &lastCheck, flightsCache, fst, yuanCache, weatherCache)
 	go func() {
 		ticker := time.NewTicker(30 * time.Minute)
 		defer ticker.Stop()
@@ -468,6 +475,7 @@ func runBotCommands(
 	flightsCache *flights.Cache,
 	fst *flightState,
 	yuanCache *yuan.Cache,
+	weatherCache *weather.Cache,
 ) {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 30
@@ -488,7 +496,7 @@ func runBotCommands(
 			}
 			if update.Message.IsCommand() {
 				fst.clearPending(update.Message.Chat.ID)
-				handleCommand(update.Message, bot, cfg, store, monitors, ntf, st, adminFn, checkMu, lastCheck, flightsCache, yuanCache)
+				handleCommand(update.Message, bot, cfg, store, monitors, ntf, st, adminFn, checkMu, lastCheck, flightsCache, yuanCache, weatherCache)
 				continue
 			}
 			go handleText(update.Message, bot, flightsCache, fst)
@@ -509,6 +517,7 @@ func handleCommand(
 	lastCheck *sync.Map,
 	flightsCache *flights.Cache,
 	yuanCache *yuan.Cache,
+	weatherCache *weather.Cache,
 ) {
 	chatID := msg.Chat.ID
 	username := msg.From.UserName
@@ -538,7 +547,7 @@ func handleCommand(
 		if !isAdmin {
 			return
 		}
-		text = buildStatusText(cfg, store, monitors, st, flightsCache, yuanCache)
+		text = buildStatusText(cfg, store, monitors, st, flightsCache, yuanCache, weatherCache)
 
 	case "check":
 		if !isAdmin {
@@ -581,6 +590,10 @@ func handleCommand(
 
 	case "yuan":
 		go sendYuan(bot, chatID, yuanCache)
+		return
+
+	case "weather":
+		go sendWeather(bot, chatID, weatherCache)
 		return
 
 	case "faq":
@@ -647,7 +660,7 @@ func buildCheckText(monitors []monitor.Monitor, results map[string]checkResult) 
 	return sb.String()
 }
 
-func buildStatusText(cfg *config.Config, store *storage.Storage, monitors []monitor.Monitor, st *appState, flightsCache *flights.Cache, yuanCache *yuan.Cache) string {
+func buildStatusText(cfg *config.Config, store *storage.Storage, monitors []monitor.Monitor, st *appState, flightsCache *flights.Cache, yuanCache *yuan.Cache, weatherCache *weather.Cache) string {
 	now := time.Now().In(moscow)
 	uptime := time.Since(st.startTime).Round(time.Second)
 	var sb strings.Builder
@@ -724,6 +737,14 @@ func buildStatusText(cfg *config.Config, store *storage.Storage, monitors []moni
 		}
 		ago := time.Since(yuanSnap.UpdatedAt).Round(time.Second)
 		sb.WriteString(fmt.Sprintf("· MOEX CNYRUB_TOM — %.2f · обновлено %s назад\n", price, ago))
+	}
+
+	sb.WriteString("\n<b>погода</b>\n")
+	if weatherSnap := weatherCache.Get(); weatherSnap == nil {
+		sb.WriteString("  кэш не загружен\n")
+	} else {
+		ago := time.Since(weatherSnap.UpdatedAt).Round(time.Second)
+		sb.WriteString(fmt.Sprintf("· open-meteo — %d дней · обновлено %s назад\n", len(weatherSnap.Days), ago))
 	}
 
 	sb.WriteString(fmt.Sprintf("\nподписчиков <b>%d</b>  ·  уведомлений <b>%d</b>\n",
@@ -958,6 +979,9 @@ func sendFaq(bot *tgbotapi.BotAPI, chatID int64) {
 
 		"рейс есть. но шанхай на юанях.\n" +
 			"/yuan — <b>знай курс.</b>",
+
+		"а небо над ареной не спрашивает.\n" +
+			"/weather — <b>смотри заранее.</b>",
 
 		"<blockquote><i>нас мало. сюда не приходят случайно.</i>\n" +
 			"этот бот — <b>маяк</b>. он горит для своих.</blockquote>",
