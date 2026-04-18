@@ -1,16 +1,12 @@
-# syntax=docker/dockerfile:1
 FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN --network=host go mod download
-
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o bot ./cmd/bot
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=vendor -o bot ./cmd/bot
 
 FROM alpine:3.21
 
-RUN --network=host apk add --no-cache curl ca-certificates tzdata
+RUN apk add --no-cache curl ca-certificates tzdata
 
 WORKDIR /app
 COPY --from=builder /app/bot .
