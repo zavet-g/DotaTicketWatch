@@ -8,6 +8,7 @@ import (
 	"math/rand/v2"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -442,8 +443,10 @@ func runPolling(
 	mu *sync.Mutex,
 ) {
 	base := time.Duration(cfg.PollIntervalMin) * time.Minute
+	heartbeatPath := filepath.Join(filepath.Dir(cfg.DBPath), "heartbeat")
 	slog.Info("polling started", "base_interval", base)
 	checkAll(monitors, ntf, store, st, adminFn, mu)
+	_ = os.WriteFile(heartbeatPath, nil, 0o644)
 
 	for {
 		interval := base
@@ -457,6 +460,7 @@ func runPolling(
 		case <-time.After(interval + jitter):
 			slog.Debug("polling tick", "sleep", (interval + jitter).Round(time.Second))
 			checkAll(monitors, ntf, store, st, adminFn, mu)
+			_ = os.WriteFile(heartbeatPath, nil, 0o644)
 		}
 	}
 }
