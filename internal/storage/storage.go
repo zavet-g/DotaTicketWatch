@@ -115,30 +115,6 @@ func (s *Storage) MarkNotified(eventID string) error {
 	})
 }
 
-func (s *Storage) AllNotified() []string {
-	var ids []string
-	_ = s.db.View(func(tx *bolt.Tx) error {
-		return tx.Bucket(bucketNotified).ForEach(func(k, _ []byte) error {
-			ids = append(ids, string(k))
-			return nil
-		})
-	})
-	return ids
-}
-
-func (s *Storage) ForgetNotified(eventID string) (bool, error) {
-	var existed bool
-	err := s.db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bucketNotified)
-		if b.Get([]byte(eventID)) == nil {
-			return nil
-		}
-		existed = true
-		return b.Delete([]byte(eventID))
-	})
-	return existed, err
-}
-
 func int64ToKey(id int64) []byte {
 	return []byte(fmt.Sprintf("%d", id))
 }

@@ -292,8 +292,6 @@ func main() {
 		adminCommands := append(userCommands,
 			tgbotapi.BotCommand{Command: "check", Description: "проверить вручную"},
 			tgbotapi.BotCommand{Command: "status", Description: "статус системы"},
-			tgbotapi.BotCommand{Command: "notified", Description: "список ID уведомлений"},
-			tgbotapi.BotCommand{Command: "forget", Description: "забыть ID · /forget <id>"},
 		)
 		scope := tgbotapi.NewBotCommandScopeChat(cfg.AdminChatID)
 		cmd := tgbotapi.NewSetMyCommandsWithScope(scope, adminCommands...)
@@ -605,42 +603,6 @@ func handleCommand(
 	case "faq":
 		go sendFaq(bot, chatID)
 		return
-
-	case "notified":
-		if !isAdmin {
-			return
-		}
-		ids := store.AllNotified()
-		if len(ids) == 0 {
-			text = "· пусто"
-			break
-		}
-		var sb strings.Builder
-		sb.WriteString(fmt.Sprintf("<b>уведомлений</b> · %d\n\n", len(ids)))
-		for _, id := range ids {
-			sb.WriteString(fmt.Sprintf("<code>%s</code>\n", id))
-		}
-		text = sb.String()
-
-	case "forget":
-		if !isAdmin {
-			return
-		}
-		arg := strings.TrimSpace(msg.CommandArguments())
-		if arg == "" {
-			text = "× укажи ID · <code>/forget &lt;id&gt;</code>"
-			break
-		}
-		existed, err := store.ForgetNotified(arg)
-		if err != nil {
-			text = fmt.Sprintf("× ошибка · <code>%v</code>", err)
-			break
-		}
-		if !existed {
-			text = fmt.Sprintf("× не найден · <code>%s</code>", arg)
-			break
-		}
-		text = fmt.Sprintf("· забыт · <code>%s</code>", arg)
 
 	default:
 		return
