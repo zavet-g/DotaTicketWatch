@@ -405,7 +405,7 @@ func runChecks(
 				}
 				slog.Info("notified", "source", event.Source, "event_id", event.ID)
 				res.newEvents++
-				if event.EventType == monitor.EventTypeAnnouncement {
+				if event.EventType == monitor.EventTypeAnnouncement && event.Source != "reddit" {
 					if st.setAnnounced() {
 						adminFn("▸ режим ускоренного опроса — 1мин / 72ч")
 					}

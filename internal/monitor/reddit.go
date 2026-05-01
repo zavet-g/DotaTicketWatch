@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -47,7 +48,7 @@ func (m *RedditMonitor) fetchAndFilter(url string) ([]Event, error) {
 	}
 	var events []Event
 	for _, entry := range feed.Entries {
-		if isTicketNews(entry.Title, "") {
+		if isRedditTicketAnnouncement(entry.Title) {
 			events = append(events, Event{
 				ID:        entry.ID,
 				Title:     entry.Title,
@@ -58,6 +59,87 @@ func (m *RedditMonitor) fetchAndFilter(url string) ([]Event, error) {
 		}
 	}
 	return events, nil
+}
+
+var redditEventSignals = []string{
+	"the international",
+	"international 2026",
+	"ti 2026", "ti2026",
+	"ti 26", "ti26",
+}
+
+var redditTicketSignals = []string{
+	"tickets", "ticket", "ticketing",
+	"presale", "pre-sale",
+	"spectator pass", "viewer pass",
+	"general sale", "general admission",
+	"axs",
+}
+
+var redditSaleSignals = []string{
+	"on sale", "for sale", "now selling", "are selling",
+	"now available", "available now",
+	"are live", "is live", "go live", "goes live", "went live", "live now",
+	"just dropped", "tickets dropped", "dropped today",
+	"are out", "out now",
+	"release date", "sale date", "sale time", "date confirmed",
+	"presale begins", "presale opens", "presale starts", "presale is live",
+	"pre-sale begins", "pre-sale opens", "pre-sale starts", "pre-sale is live",
+	"sale begins", "sale opens", "sale starts", "sale is live",
+	"sales begin", "sales open", "sales start", "sales are live",
+	"ticket sale", "ticket sales",
+	"tickets for the international",
+	"buy now", "buy your tickets", "get your tickets",
+	"axs.com", "powered by axs", "partnership with axs",
+	"tickets announced", "tickets revealed",
+	"info revealed", "info announced",
+	"prices revealed", "prices announced",
+	"details revealed", "details announced",
+	"ticketing partner", "ticketing faq",
+	"first wave", "wave 1", "in waves",
+	"general sale", "general admission",
+	"save the date", "sold out",
+}
+
+var redditNoiseSignals = []string{
+	"discussion", "discuss", "megathread",
+	"rumor", "rumour", "speculation", "speculate",
+	"wishlist", "hopium", "copium",
+	"what if", "anyone else", "hopefully", "i wish", "if only",
+	"expected to", "rumored to", "gonna be",
+	"meme", "fluff", "shitpost", "joke", "lol",
+	"circlejerk", "unpopular opinion", "hot take",
+	"nightmare", "armageddon", "woes", "furious", "fuming",
+	"[question]", "[help]", "[fluff]", "[meme]", "[clip]", "[fan art]",
+	"fake news", "hoax", " /s",
+}
+
+func isRedditTicketAnnouncement(title string) bool {
+	if strings.Contains(title, "?") {
+		return false
+	}
+	lower := strings.ToLower(title)
+	for _, s := range redditNoiseSignals {
+		if strings.Contains(lower, s) {
+			return false
+		}
+	}
+	if !containsAny(lower, redditEventSignals) {
+		return false
+	}
+	if !containsAny(lower, redditTicketSignals) {
+		return false
+	}
+	return containsAny(lower, redditSaleSignals)
+}
+
+func containsAny(s string, needles []string) bool {
+	for _, n := range needles {
+		if strings.Contains(s, n) {
+			return true
+		}
+	}
+	return false
 }
 
 func (m *RedditMonitor) fetchFeed(url string) (*atomFeed, error) {
