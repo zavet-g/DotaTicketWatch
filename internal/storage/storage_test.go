@@ -61,4 +61,36 @@ func TestStorage(t *testing.T) {
 			t.Error("different event should not be marked")
 		}
 	})
+
+	t.Run("forget_notified", func(t *testing.T) {
+		_ = s.MarkNotified("evt-a")
+		_ = s.MarkNotified("evt-b")
+
+		ids := s.AllNotified()
+		if len(ids) < 2 {
+			t.Fatalf("expected at least 2 notified ids, got %d", len(ids))
+		}
+
+		existed, err := s.ForgetNotified("evt-a")
+		if err != nil {
+			t.Fatalf("ForgetNotified: %v", err)
+		}
+		if !existed {
+			t.Error("expected existed=true for known id")
+		}
+		if s.AlreadyNotified("evt-a") {
+			t.Error("evt-a should be forgotten")
+		}
+		if !s.AlreadyNotified("evt-b") {
+			t.Error("evt-b should still be notified")
+		}
+
+		existed, err = s.ForgetNotified("evt-missing")
+		if err != nil {
+			t.Fatalf("ForgetNotified missing: %v", err)
+		}
+		if existed {
+			t.Error("expected existed=false for unknown id")
+		}
+	})
 }
