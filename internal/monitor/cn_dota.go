@@ -148,7 +148,7 @@ func ClassifyCNContent(ctx context.Context, c ai.Client, title string) (*CNClass
 		User:      title,
 		JSONMode:  true,
 		MaxTokens: 200,
-		CacheKey:  ai.HashKey("cn_classify", c.ModelFast(), title),
+		CacheKey:  ai.HashKey("cn_classify", c.ModelFast(), ai.SystemCNClassify, title),
 	})
 	if err != nil {
 		return nil, err

@@ -32,7 +32,7 @@ func ClassifySteamPost(ctx context.Context, c ai.Client, title, contents string)
 		User:      user,
 		JSONMode:  true,
 		MaxTokens: 300,
-		CacheKey:  ai.HashKey("steam_classify", c.ModelFast(), title, body),
+		CacheKey:  ai.HashKey("steam_classify", c.ModelFast(), ai.SystemSteamClassify, title, body),
 	})
 	if err != nil {
 		return nil, err

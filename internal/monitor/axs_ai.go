@@ -42,7 +42,7 @@ func ParseAXSWithAI(ctx context.Context, c ai.Client, html string) ([]Event, err
 		User:      clean,
 		JSONMode:  true,
 		MaxTokens: 600,
-		CacheKey:  ai.HashKey("axs_fallback", c.ModelFast(), clean),
+		CacheKey:  ai.HashKey("axs_fallback", c.ModelFast(), ai.SystemAXSFallback, clean),
 	})
 	if err != nil {
 		return nil, err

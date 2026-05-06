@@ -34,7 +34,7 @@ func AnalyzeAXSDiff(ctx context.Context, c ai.Client, oldJSON, newJSON string) (
 		User:      user,
 		JSONMode:  true,
 		MaxTokens: 500,
-		CacheKey:  ai.HashKey("axs_diff", c.ModelFast(), oldJSON, newJSON),
+		CacheKey:  ai.HashKey("axs_diff", c.ModelFast(), ai.SystemAXSDiff, oldJSON, newJSON),
 	})
 	if err != nil {
 		return nil, err

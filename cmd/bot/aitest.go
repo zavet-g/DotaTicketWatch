@@ -15,6 +15,8 @@ import (
 	"github.com/artem/dotaticketwatch/internal/storage"
 )
 
+const aitestMaxLen = 3900
+
 func handleAITest(msg *tgbotapi.Message, bot *tgbotapi.BotAPI, cfg *config.Config, store *storage.Storage, aiClient ai.Client) {
 	chatID := msg.Chat.ID
 	if cfg.AdminChatID == 0 || chatID != cfg.AdminChatID {
@@ -28,197 +30,233 @@ func handleAITest(msg *tgbotapi.Message, bot *tgbotapi.BotAPI, cfg *config.Confi
 }
 
 func aitestAll(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, store *storage.Storage, aiClient ai.Client) {
-	reply(bot, chatID, "▸ <b>ai тесты</b> · полный прогон\n<i>9 шагов · ответ по мере готовности</i>")
+	header := "▸ <b>ai тесты</b> · полный прогон\n<i>9 шагов · обновление по мере готовности</i>\n\n"
+	initMsg, err := bot.Send(newHTMLMessage(chatID, header))
+	if err != nil {
+		return
+	}
+	msgID := initMsg.MessageID
 
-	steps := []func(){
-		func() { aitestHealth(bot, chatID, aiClient) },
-		func() { aitestAXS(bot, chatID, cfg, aiClient, true) },
-		func() { aitestAXS(bot, chatID, cfg, aiClient, false) },
-		func() { aitestSteam(bot, chatID, cfg, aiClient) },
-		func() { aitestCN(bot, chatID, cfg, aiClient, "") },
-		func() { aitestCN(bot, chatID, cfg, aiClient, "global") },
-		func() { aitestCN(bot, chatID, cfg, aiClient, "cnonly") },
-		func() { aitestCN(bot, chatID, cfg, aiClient, "marketing") },
-		func() { aitestDiff(bot, chatID, cfg, store, aiClient, true) },
+	steps := []struct {
+		name string
+		run  func() string
+	}{
+		{"health", func() string { return runHealth(aiClient) }},
+		{"axs broken", func() string { return runAXS(cfg, aiClient, true) }},
+		{"axs real", func() string { return runAXS(cfg, aiClient, false) }},
+		{"steam", func() string { return runSteam(cfg, aiClient) }},
+		{"cn real", func() string { return runCN(cfg, aiClient) }},
+		{"cn mock global", func() string { return runCNMock(aiClient, "global") }},
+		{"cn mock cnonly", func() string { return runCNMock(aiClient, "cnonly") }},
+		{"cn mock marketing", func() string { return runCNMock(aiClient, "marketing") }},
+		{"diff mock", func() string { return runDiffMock(aiClient) }},
 	}
+
+	var sb strings.Builder
+	sb.WriteString(header)
 	start := time.Now()
-	for i, step := range steps {
-		step()
-		if i < len(steps)-1 {
-			time.Sleep(400 * time.Millisecond)
-		}
+
+	for _, st := range steps {
+		block := st.run()
+		sb.WriteString(block)
+		sb.WriteString("\n\n")
+		editAITest(bot, chatID, msgID, sb.String())
 	}
-	reply(bot, chatID, fmt.Sprintf("· <b>готово</b> · %s", time.Since(start).Round(time.Second)))
+
+	sb.WriteString(fmt.Sprintf("· <b>готово</b> · %s", time.Since(start).Round(time.Second)))
+	editAITest(bot, chatID, msgID, sb.String())
 }
 
-func aitestHealth(bot *tgbotapi.BotAPI, chatID int64, aiClient ai.Client) {
+func editAITest(bot *tgbotapi.BotAPI, chatID int64, msgID int, text string) {
+	if len(text) > aitestMaxLen {
+		text = text[:aitestMaxLen] + "\n…"
+	}
+	editMessage(bot, chatID, msgID, text)
+}
+
+func runHealth(aiClient ai.Client) string {
 	start := time.Now()
 	resp, err := aiClient.Complete(context.Background(), ai.CompleteRequest{
 		Model:     aiClient.ModelFast(),
 		User:      "pong?",
 		MaxTokens: 10,
 	})
-	if err != nil {
-		reply(bot, chatID, fmt.Sprintf("× <b>health</b>\n<code>%v</code>", err))
-		return
-	}
 	dt := time.Since(start).Round(time.Millisecond)
-	reply(bot, chatID, fmt.Sprintf(
-		"· <b>health</b> ok\n<i>%s</i>\n<code>tokens · %d in / %d out · $%.5f</code>\n<code>%s</code>",
+	if err != nil {
+		return fmt.Sprintf("× <b>health</b>\n<code>%v</code>", err)
+	}
+	cached := ""
+	if resp.Usage.Cached {
+		cached = " · cached"
+	}
+	return fmt.Sprintf(
+		"· <b>health</b> · <i>%s</i>\n<code>%dt · $%.5f%s · %s</code>",
 		strings.TrimSpace(resp.Content),
-		resp.Usage.PromptTokens, resp.Usage.CompletionTokens, resp.Usage.CostUSD,
-		dt))
+		resp.Usage.TotalTokens, resp.Usage.CostUSD, cached, dt)
 }
 
-func aitestAXS(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, aiClient ai.Client, broken bool) {
+func runAXS(cfg *config.Config, aiClient ai.Client, broken bool) string {
 	var html string
 	var err error
+	label := "AXS · ai-fallback"
 	if broken {
+		label = "AXS · сломанный html"
 		html = `<!DOCTYPE html><html><body>
 <h1>The International 2026 — Tickets</h1>
-<p>Get ready for TI 2026 in Shanghai!</p>
-<a href="https://www.axs.com/events/9999991/the-international-dota-2-tickets">Buy tickets</a>
-<a href="https://www.axs.com/events/9999992/ti-finals">Finals tickets</a>
+<a href="https://www.axs.com/events/9999991/the-international-dota-2-tickets">Buy</a>
+<a href="https://www.axs.com/events/9999992/ti-finals">Finals</a>
 </body></html>`
 	} else {
 		html, err = fetcher.Fetch(cfg.AXSHubURL, cfg.FlareSolverrURL)
 		if err != nil {
-			reply(bot, chatID, fmt.Sprintf("× fetch axs\n<code>%v</code>", err))
-			return
+			return fmt.Sprintf("× <b>%s</b>\n<code>%v</code>", label, err)
 		}
 	}
 
-	keywordEvents, _ := extractAXSEventsHelper(html)
+	keywordEvents, _ := monitor.ExtractAXSEventsExported(html)
 	start := time.Now()
 	aiEvents, aiErr := monitor.ParseAXSWithAI(context.Background(), aiClient, html)
 	dt := time.Since(start).Round(time.Millisecond)
 
 	var sb strings.Builder
-	if broken {
-		sb.WriteString("▸ <b>AXS · ai на сломанном html</b>\n")
-	} else {
-		sb.WriteString("▸ <b>AXS · ai-fallback тест</b>\n")
-	}
-	sb.WriteString(fmt.Sprintf("· keyword: %d событий\n", len(keywordEvents)))
+	sb.WriteString(fmt.Sprintf("▸ <b>%s</b>\n", label))
+	sb.WriteString(fmt.Sprintf("· keyword: %d · ai: ", len(keywordEvents)))
 	if aiErr != nil {
-		sb.WriteString(fmt.Sprintf("× ai: %v\n", aiErr))
+		sb.WriteString(fmt.Sprintf("× %v", aiErr))
 	} else {
-		sb.WriteString(fmt.Sprintf("▸ ai: %d событий\n", len(aiEvents)))
+		sb.WriteString(fmt.Sprintf("%d", len(aiEvents)))
 		for _, e := range aiEvents {
-			sb.WriteString(fmt.Sprintf("  · <code>%s</code> %s\n", e.ID, truncateLine(e.Title, 60)))
+			sb.WriteString(fmt.Sprintf("\n  <code>%s</code> %s", e.ID, truncateLine(e.Title, 50)))
 		}
-		matchKeyword := sameIDs(keywordEvents, aiEvents)
-		if matchKeyword && !broken {
-			sb.WriteString("· совпадает\n")
+		if !broken && sameIDs(keywordEvents, aiEvents) {
+			sb.WriteString(" · совпадает")
 		}
 	}
-	sb.WriteString(fmt.Sprintf("<code>%s</code>", dt))
-	reply(bot, chatID, sb.String())
+	sb.WriteString(fmt.Sprintf("\n<code>%s</code>", dt))
+	return sb.String()
 }
 
-func aitestSteam(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, aiClient ai.Client) {
+func runSteam(cfg *config.Config, aiClient ai.Client) string {
 	m := monitor.NewSteamNewsMonitor(cfg.SteamNewsURL, nil, nil)
 	items, err := m.FetchItems()
 	if err != nil {
-		reply(bot, chatID, fmt.Sprintf("× steam fetch\n<code>%v</code>", err))
-		return
+		return fmt.Sprintf("× <b>Steam</b>\n<code>%v</code>", err)
 	}
 	if len(items) > 20 {
 		items = items[:20]
 	}
+	start := time.Now()
 
-	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("▸ <b>Steam · ai-классификатор</b>\nпроанализировано %d постов\n\n", len(items)))
-
-	var totalCost float64
 	var diffs int
+	var classified int
+	type row struct {
+		title  string
+		kw     bool
+		ai     bool
+		conf   float64
+	}
+	var diffRows []row
 	for _, item := range items {
 		kw := monitor.IsTicketNewsExported(item.Title, item.Contents)
 		var aiHit bool
-		var aiNote string
+		var conf float64
 		if kw || mentionsTIExt(item.Title, item.Contents) {
+			classified++
 			cls, err := monitor.ClassifySteamPost(context.Background(), aiClient, item.Title, item.Contents)
-			if err != nil {
-				aiNote = fmt.Sprintf("× %v", err)
-			} else {
+			if err == nil {
 				aiHit = cls.IsTicketSignal && cls.Confidence >= 0.6
-				aiNote = fmt.Sprintf("%.2f", cls.Confidence)
+				conf = cls.Confidence
 			}
 		}
-		marker := "·"
 		if kw != aiHit {
-			marker = "▸"
 			diffs++
+			diffRows = append(diffRows, row{
+				title: truncateLine(item.Title, 50),
+				kw:    kw, ai: aiHit, conf: conf,
+			})
 		}
-		title := truncateLine(item.Title, 50)
-		sb.WriteString(fmt.Sprintf("%s %q  kw:%s ai:%s  %s\n",
-			marker, title, yn(kw), yn(aiHit), aiNote))
 	}
-	sb.WriteString(fmt.Sprintf("\n· keyword/ai diff: %d постов\n", diffs))
-	sb.WriteString(fmt.Sprintf("<code>cost ≈ $%.4f</code>", totalCost))
+	dt := time.Since(start).Round(time.Millisecond)
 
-	out := sb.String()
-	if len(out) > 4000 {
-		out = out[:4000] + "\n…"
+	var sb strings.Builder
+	sb.WriteString("▸ <b>Steam · ai-классификатор</b>\n")
+	sb.WriteString(fmt.Sprintf("постов %d · ии-вызовов %d · diff %d\n", len(items), classified, diffs))
+	for _, r := range diffRows {
+		sb.WriteString(fmt.Sprintf("· %s · kw:%s ai:%s (%.2f)\n", r.title, yn(r.kw), yn(r.ai), r.conf))
 	}
-	reply(bot, chatID, out)
+	sb.WriteString(fmt.Sprintf("<code>%s</code>", dt))
+	return sb.String()
 }
 
-func aitestDiff(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, store *storage.Storage, aiClient ai.Client, mock bool) {
-	if mock {
-		oldJSON := `{"performerEvents":{"totalEvents":0,"eventItems":[]},"teamUpcoming":{"hasUpcomingEvent":false},"discovery":{"events":[]}}`
-		newJSON := `{"performerEvents":{"totalEvents":1,"eventItems":[{"id":"7654321","eventName":"The International 2026","statusId":2,"venueCity":"Shanghai","date":"2026-08-20"}]},"teamUpcoming":{"hasUpcomingEvent":true,"upcomingEvent":{"id":"7654321","eventName":"TI 2026"}},"discovery":{"events":[{"id":"7654321"}]}}`
-		start := time.Now()
-		sig, err := monitor.AnalyzeAXSDiff(context.Background(), aiClient, oldJSON, newJSON)
-		dt := time.Since(start).Round(time.Millisecond)
-		if err != nil {
-			reply(bot, chatID, fmt.Sprintf("× diff mock\n<code>%v</code>", err))
-			return
-		}
-		var sb strings.Builder
-		sb.WriteString("▸ <b>AXS diff · mock</b>\n")
-		sb.WriteString(fmt.Sprintf("· is_pre_sale_signal: %v\n", sig.IsPreSaleSignal))
-		sb.WriteString(fmt.Sprintf("· confidence: %.2f\n", sig.Confidence))
-		sb.WriteString(fmt.Sprintf("<i>%s</i>\n", sig.Summary))
-		for _, ch := range sig.Changes {
-			sb.WriteString(fmt.Sprintf("• %s\n", ch))
-		}
-		sb.WriteString(fmt.Sprintf("<code>%s</code>", dt))
-		reply(bot, chatID, sb.String())
-		return
-	}
-
-	html, err := fetcher.Fetch(cfg.AXSHubURL, cfg.FlareSolverrURL)
+func runCN(cfg *config.Config, aiClient ai.Client) string {
+	html, err := fetcher.Fetch(cfg.CNNewsURL, cfg.FlareSolverrURL)
 	if err != nil {
-		reply(bot, chatID, fmt.Sprintf("× axs fetch\n<code>%v</code>", err))
-		return
+		return fmt.Sprintf("× <b>CN · fetch</b>\n<code>%v</code>", err)
 	}
-	pruned, err := monitor.PruneAXSSnapshotExported(html)
-	if err != nil {
-		reply(bot, chatID, fmt.Sprintf("× prune snapshot\n<code>%v</code>", err))
-		return
-	}
-	prev, ok := store.AIStateGet("axs_snapshot")
-	_ = store.AIStateSet("axs_snapshot", pruned)
-	if !ok {
-		reply(bot, chatID, "· базовый снапшот сохранён · повтори через 5 минут")
-		return
-	}
-	if string(prev) == string(pruned) {
-		reply(bot, chatID, "▸ <b>AXS diff</b>\n· идентично (no ai call)\n· ok")
-		return
+	headlines := monitor.ExtractCNHeadlines(html)
+	if len(headlines) > 10 {
+		headlines = headlines[:10]
 	}
 	start := time.Now()
-	sig, err := monitor.AnalyzeAXSDiff(context.Background(), aiClient, string(prev), string(pruned))
+
+	counts := map[string]int{}
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("▸ <b>CN · dota2.com.cn</b>\n%d заголовков\n", len(headlines)))
+	for _, h := range headlines {
+		cls, err := monitor.ClassifyCNContent(context.Background(), aiClient, h.Title)
+		if err != nil {
+			sb.WriteString(fmt.Sprintf("× %s\n", h.ArticleID))
+			continue
+		}
+		counts[string(cls.Category)]++
+		sb.WriteString(fmt.Sprintf("· %s (%.2f) %s\n", cnCatShort(cls.Category), cls.Confidence, truncateLine(cls.TitleRu, 60)))
+	}
+	dt := time.Since(start).Round(time.Millisecond)
+	sb.WriteString(fmt.Sprintf("итог: gl=%d cn=%d mk=%d ¬=%d\n",
+		counts["pre_sale_global"], counts["pre_sale_cn_only"], counts["marketing_cn"], counts["not_relevant"]))
+	sb.WriteString(fmt.Sprintf("<code>%s</code>", dt))
+	return sb.String()
+}
+
+func runCNMock(aiClient ai.Client, mode string) string {
+	mockTitles := map[string]string{
+		"global":    "国际邀请赛2026门票将于八月开售（axs）",
+		"cnonly":    "大麦网 ti2026 门票预售开启",
+		"marketing": "报名参赛刀塔校友会，抽取TI2026现场观赛门票！",
+	}
+	title, ok := mockTitles[mode]
+	if !ok {
+		return fmt.Sprintf("× cn mock %s · нет такого", mode)
+	}
+	start := time.Now()
+	cls, err := monitor.ClassifyCNContent(context.Background(), aiClient, title)
 	dt := time.Since(start).Round(time.Millisecond)
 	if err != nil {
-		reply(bot, chatID, fmt.Sprintf("× diff ai\n<code>%v</code>", err))
-		return
+		return fmt.Sprintf("× <b>CN mock %s</b>\n<code>%v</code>", mode, err)
 	}
 	var sb strings.Builder
-	sb.WriteString("▸ <b>AXS diff</b>\n")
-	sb.WriteString(fmt.Sprintf("· is_pre_sale_signal: %v\n", sig.IsPreSaleSignal))
-	sb.WriteString(fmt.Sprintf("· confidence: %.2f\n", sig.Confidence))
+	sb.WriteString(fmt.Sprintf("▸ <b>CN mock · %s</b>\n", mode))
+	sb.WriteString(fmt.Sprintf("· <b>%s</b> (%.2f)\n", cls.Category, cls.Confidence))
+	sb.WriteString(fmt.Sprintf("· %s\n", cls.TitleRu))
+	if cls.NoteRu != "" {
+		sb.WriteString(fmt.Sprintf("<i>%s</i>\n", cls.NoteRu))
+	}
+	sb.WriteString(fmt.Sprintf("<code>%s</code>", dt))
+	return sb.String()
+}
+
+func runDiffMock(aiClient ai.Client) string {
+	oldJSON := `{"performerEvents":{"totalEvents":0,"eventItems":[]},"teamUpcoming":{"hasUpcomingEvent":false},"discovery":{"events":[]}}`
+	newJSON := `{"performerEvents":{"totalEvents":1,"eventItems":[{"id":"7654321","eventName":"The International 2026","statusId":2,"venueCity":"Shanghai","date":"2026-08-20"}]},"teamUpcoming":{"hasUpcomingEvent":true,"upcomingEvent":{"id":"7654321","eventName":"TI 2026"}},"discovery":{"events":[{"id":"7654321"}]}}`
+	start := time.Now()
+	sig, err := monitor.AnalyzeAXSDiff(context.Background(), aiClient, oldJSON, newJSON)
+	dt := time.Since(start).Round(time.Millisecond)
+	if err != nil {
+		return fmt.Sprintf("× <b>AXS diff mock</b>\n<code>%v</code>", err)
+	}
+	var sb strings.Builder
+	sb.WriteString("▸ <b>AXS diff mock</b>\n")
+	sb.WriteString(fmt.Sprintf("· pre_sale: %v · %.2f\n", sig.IsPreSaleSignal, sig.Confidence))
 	if sig.Summary != "" {
 		sb.WriteString(fmt.Sprintf("<i>%s</i>\n", sig.Summary))
 	}
@@ -226,83 +264,21 @@ func aitestDiff(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, store *s
 		sb.WriteString(fmt.Sprintf("• %s\n", ch))
 	}
 	sb.WriteString(fmt.Sprintf("<code>%s</code>", dt))
-	reply(bot, chatID, sb.String())
+	return sb.String()
 }
 
-func aitestCN(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, aiClient ai.Client, mode string) {
-	mockTitles := map[string]string{
-		"global":    "国际邀请赛2026门票将于八月开售（axs）",
-		"cnonly":    "大麦网 ti2026 门票预售开启",
-		"marketing": "报名参赛刀塔校友会，抽取TI2026现场观赛门票！",
+func cnCatShort(c monitor.CNCategory) string {
+	switch c {
+	case monitor.CNCategoryPreSaleGlobal:
+		return "global"
+	case monitor.CNCategoryPreSaleCNOnly:
+		return "cn-only"
+	case monitor.CNCategoryMarketingCN:
+		return "marketing"
+	case monitor.CNCategoryNotRelevant:
+		return "¬"
 	}
-	if mode == "mock" {
-		reply(bot, chatID, "× укажи: cn mock global | cnonly | marketing")
-		return
-	}
-	if title, ok := mockTitles[mode]; ok {
-		start := time.Now()
-		cls, err := monitor.ClassifyCNContent(context.Background(), aiClient, title)
-		dt := time.Since(start).Round(time.Millisecond)
-		if err != nil {
-			reply(bot, chatID, fmt.Sprintf("× cn mock %s\n<code>%v</code>", mode, err))
-			return
-		}
-		var sb strings.Builder
-		sb.WriteString(fmt.Sprintf("▸ <b>CN · mock %s</b>\n", mode))
-		sb.WriteString(fmt.Sprintf("input: <code>%s</code>\n\n", title))
-		sb.WriteString(fmt.Sprintf("· category: <b>%s</b>\n", cls.Category))
-		sb.WriteString(fmt.Sprintf("· confidence: %.2f\n", cls.Confidence))
-		sb.WriteString(fmt.Sprintf("· title_ru: %s\n", cls.TitleRu))
-		if cls.NoteRu != "" {
-			sb.WriteString(fmt.Sprintf("· note_ru: <i>%s</i>\n", cls.NoteRu))
-		}
-		sb.WriteString(fmt.Sprintf("<code>%s</code>", dt))
-		reply(bot, chatID, sb.String())
-		return
-	}
-
-	html, err := fetcher.Fetch(cfg.CNNewsURL, cfg.FlareSolverrURL)
-	if err != nil {
-		reply(bot, chatID, fmt.Sprintf("× cn fetch\n<code>%v</code>", err))
-		return
-	}
-	headlines := monitor.ExtractCNHeadlines(html)
-	if len(headlines) > 12 {
-		headlines = headlines[:12]
-	}
-
-	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("▸ <b>CN · dota2.com.cn</b>\nнайдено %d заголовков\n\n", len(headlines)))
-
-	var counts = map[CNCategoryStat]int{}
-	var totalCost float64
-	for _, h := range headlines {
-		cls, err := monitor.ClassifyCNContent(context.Background(), aiClient, h.Title)
-		if err != nil {
-			sb.WriteString(fmt.Sprintf("× <code>%s</code>: %v\n", h.ArticleID, err))
-			continue
-		}
-		counts[CNCategoryStat(cls.Category)]++
-		sb.WriteString(fmt.Sprintf("· <b>%s</b> (%.2f)\n  %s\n", cls.Category, cls.Confidence, cls.TitleRu))
-		if cls.NoteRu != "" {
-			sb.WriteString(fmt.Sprintf("  <i>%s</i>\n", cls.NoteRu))
-		}
-	}
-	sb.WriteString(fmt.Sprintf("\n· итог: pre_sale_global=%d cn_only=%d marketing=%d not_relevant=%d\n",
-		counts["pre_sale_global"], counts["pre_sale_cn_only"], counts["marketing_cn"], counts["not_relevant"]))
-	sb.WriteString(fmt.Sprintf("<code>cost ≈ $%.4f</code>", totalCost))
-
-	out := sb.String()
-	if len(out) > 4000 {
-		out = out[:4000] + "\n…"
-	}
-	reply(bot, chatID, out)
-}
-
-type CNCategoryStat string
-
-func extractAXSEventsHelper(html string) ([]monitor.Event, error) {
-	return monitor.ExtractAXSEventsExported(html)
+	return string(c)
 }
 
 func sameIDs(a, b []monitor.Event) bool {
