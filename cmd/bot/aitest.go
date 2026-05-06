@@ -233,7 +233,7 @@ func aitestCN(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, aiClient a
 	mockTitles := map[string]string{
 		"global":    "国际邀请赛2026门票将于八月开售（axs）",
 		"cnonly":    "大麦网 ti2026 门票预售开启",
-		"marketing": "抽取ti2026观赛门票",
+		"marketing": "报名参赛刀塔校友会，抽取TI2026现场观赛门票！",
 	}
 	if mode == "mock" {
 		reply(bot, chatID, "× укажи: cn mock global | cnonly | marketing")
