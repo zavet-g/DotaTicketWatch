@@ -20,52 +20,35 @@ func handleAITest(msg *tgbotapi.Message, bot *tgbotapi.BotAPI, cfg *config.Confi
 	if cfg.AdminChatID == 0 || chatID != cfg.AdminChatID {
 		return
 	}
-	args := strings.Fields(msg.CommandArguments())
 	if !aiClient.IsEnabled() {
 		reply(bot, chatID, "× ии не настроен · установи <code>OPENAI_API_KEY</code>")
 		return
 	}
-	if len(args) == 0 {
-		reply(bot, chatID, aitestMenu())
-		return
-	}
-	switch args[0] {
-	case "health":
-		go aitestHealth(bot, chatID, aiClient)
-	case "axs":
-		broken := len(args) > 1 && args[1] == "broken"
-		go aitestAXS(bot, chatID, cfg, aiClient, broken)
-	case "steam":
-		go aitestSteam(bot, chatID, cfg, aiClient)
-	case "diff":
-		mock := len(args) > 1 && args[1] == "mock"
-		go aitestDiff(bot, chatID, cfg, store, aiClient, mock)
-	case "cn":
-		mode := ""
-		if len(args) > 1 {
-			mode = args[1]
-		}
-		go aitestCN(bot, chatID, cfg, aiClient, mode)
-	default:
-		reply(bot, chatID, "× неизвестная команда\n\n"+aitestMenu())
-	}
+	go aitestAll(bot, chatID, cfg, store, aiClient)
 }
 
-func aitestMenu() string {
-	return strings.Join([]string{
-		"▸ <b>ai тесты</b>",
-		"доступно:",
-		"· /aitest health     — пинг ии-клиента",
-		"· /aitest axs        — fallback парсер на реальном html",
-		"· /aitest axs broken — на сломанном html",
-		"· /aitest steam      — классификатор news",
-		"· /aitest diff       — axs __NEXT_DATA__ diff",
-		"· /aitest diff mock",
-		"· /aitest cn         — китайский watcher",
-		"· /aitest cn mock global",
-		"· /aitest cn mock cnonly",
-		"· /aitest cn mock marketing",
-	}, "\n")
+func aitestAll(bot *tgbotapi.BotAPI, chatID int64, cfg *config.Config, store *storage.Storage, aiClient ai.Client) {
+	reply(bot, chatID, "▸ <b>ai тесты</b> · полный прогон\n<i>9 шагов · ответ по мере готовности</i>")
+
+	steps := []func(){
+		func() { aitestHealth(bot, chatID, aiClient) },
+		func() { aitestAXS(bot, chatID, cfg, aiClient, true) },
+		func() { aitestAXS(bot, chatID, cfg, aiClient, false) },
+		func() { aitestSteam(bot, chatID, cfg, aiClient) },
+		func() { aitestCN(bot, chatID, cfg, aiClient, "") },
+		func() { aitestCN(bot, chatID, cfg, aiClient, "global") },
+		func() { aitestCN(bot, chatID, cfg, aiClient, "cnonly") },
+		func() { aitestCN(bot, chatID, cfg, aiClient, "marketing") },
+		func() { aitestDiff(bot, chatID, cfg, store, aiClient, true) },
+	}
+	start := time.Now()
+	for i, step := range steps {
+		step()
+		if i < len(steps)-1 {
+			time.Sleep(400 * time.Millisecond)
+		}
+	}
+	reply(bot, chatID, fmt.Sprintf("· <b>готово</b> · %s", time.Since(start).Round(time.Second)))
 }
 
 func aitestHealth(bot *tgbotapi.BotAPI, chatID int64, aiClient ai.Client) {
