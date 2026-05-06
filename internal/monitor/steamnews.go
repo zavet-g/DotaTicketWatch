@@ -1,14 +1,23 @@
 package monitor
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/artem/dotaticketwatch/internal/ai"
 )
+
+type steamStore interface {
+	AlreadyClassified(key string) bool
+	MarkClassified(key string) error
+}
 
 var ticketSignals = []string{
 	"tickets", "ticket sale", "on sale", "presale", "pre-sale",
@@ -39,14 +48,18 @@ type steamNewsResponse struct {
 }
 
 type SteamNewsMonitor struct {
-	apiURL string
-	client *http.Client
+	apiURL   string
+	client   *http.Client
+	aiClient ai.Client
+	store    steamStore
 }
 
-func NewSteamNewsMonitor(apiURL string) *SteamNewsMonitor {
+func NewSteamNewsMonitor(apiURL string, aiClient ai.Client, store steamStore) *SteamNewsMonitor {
 	return &SteamNewsMonitor{
-		apiURL: apiURL,
-		client: &http.Client{Timeout: 15 * time.Second},
+		apiURL:   apiURL,
+		client:   &http.Client{Timeout: 15 * time.Second},
+		aiClient: aiClient,
+		store:    store,
 	}
 }
 
@@ -59,18 +72,73 @@ func (m *SteamNewsMonitor) Check() ([]Event, error) {
 	}
 	var events []Event
 	for _, item := range items {
-		if isTicketNews(item.Title, item.Contents) {
-			events = append(events, Event{
-				ID:        item.GID,
-				Title:     item.Title,
-				URL:       item.URL,
-				Source:    "steam",
-				EventType: EventTypeAnnouncement,
-				ImageURL:  extractSteamImage(item.Contents),
-			})
+		signal, source := m.classify(item)
+		if !signal {
+			continue
 		}
+		events = append(events, Event{
+			ID:        item.GID,
+			Title:     item.Title,
+			URL:       item.URL,
+			Source:    source,
+			EventType: EventTypeAnnouncement,
+			ImageURL:  extractSteamImage(item.Contents),
+		})
 	}
 	return events, nil
+}
+
+func (m *SteamNewsMonitor) classify(item steamNewsItem) (bool, string) {
+	keywordHit := isTicketNews(item.Title, item.Contents)
+
+	if m.aiClient == nil || !m.aiClient.IsEnabled() {
+		if keywordHit {
+			return true, "steam"
+		}
+		return false, ""
+	}
+
+	if !keywordHit && !mentionsTI(item.Title, item.Contents) {
+		return false, ""
+	}
+
+	classifyKey := "steam:" + item.GID
+	if m.store != nil && m.store.AlreadyClassified(classifyKey) {
+		if keywordHit {
+			return true, "steam"
+		}
+		return false, ""
+	}
+
+	cls, err := ClassifySteamPost(context.Background(), m.aiClient, item.Title, item.Contents)
+	if err != nil {
+		slog.Warn("steam ai classify failed", "gid", item.GID, "err", err)
+		if keywordHit {
+			return true, "steam"
+		}
+		return false, ""
+	}
+	if m.store != nil {
+		_ = m.store.MarkClassified(classifyKey)
+	}
+	if cls.IsTicketSignal && cls.Confidence >= 0.6 {
+		if keywordHit {
+			return true, "steam"
+		}
+		return true, "steam-ai"
+	}
+	return false, ""
+}
+
+func mentionsTI(title, contents string) bool {
+	text := strings.ToLower(title + " " + contents)
+	signals := []string{"the international", "ti 2026", "ti2026", "ti26", "shanghai", "international 2026"}
+	for _, s := range signals {
+		if strings.Contains(text, s) {
+			return true
+		}
+	}
+	return false
 }
 
 func (m *SteamNewsMonitor) fetch() ([]steamNewsItem, error) {

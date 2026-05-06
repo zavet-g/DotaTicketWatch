@@ -54,7 +54,7 @@ func TestSteamNewsMonitor_Check_ReturnsSameEventsEveryCall(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	m := NewSteamNewsMonitor(srv.URL)
+	m := NewSteamNewsMonitor(srv.URL, nil, nil)
 
 	for call := 1; call <= 3; call++ {
 		events, err := m.Check()

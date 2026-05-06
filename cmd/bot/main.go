@@ -16,6 +16,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
+	"github.com/artem/dotaticketwatch/internal/ai"
 	"github.com/artem/dotaticketwatch/internal/config"
 	"github.com/artem/dotaticketwatch/internal/fetcher"
 	"github.com/artem/dotaticketwatch/internal/flights"
@@ -292,6 +293,7 @@ func main() {
 		adminCommands := append(userCommands,
 			tgbotapi.BotCommand{Command: "check", Description: "проверить вручную"},
 			tgbotapi.BotCommand{Command: "status", Description: "статус системы"},
+			tgbotapi.BotCommand{Command: "aitest", Description: "ии-тесты модулей"},
 		)
 		scope := tgbotapi.NewBotCommandScopeChat(cfg.AdminChatID)
 		cmd := tgbotapi.NewSetMyCommandsWithScope(scope, adminCommands...)
@@ -300,11 +302,47 @@ func main() {
 		}
 	}
 
+	adminBootstrap := func(text string) {
+		if cfg.AdminChatID == 0 {
+			return
+		}
+		sendDirect(bot, cfg.AdminChatID, text)
+	}
+
+	aiClient := ai.NewClient(ai.Config{
+		APIKey:     cfg.OpenAIKey,
+		BaseURL:    cfg.OpenAIBaseURL,
+		ModelFast:  cfg.OpenAIModelFast,
+		ModelSmart: cfg.OpenAIModelSmart,
+		Timeout:    time.Duration(cfg.OpenAITimeoutSec) * time.Second,
+		MaxRetries: cfg.OpenAIMaxRetries,
+		CacheTTL:   time.Duration(cfg.AICacheTTLHours) * time.Hour,
+		OnFailureRun: func(err error) {
+			adminBootstrap(fmt.Sprintf("× <b>ии</b> · отключён до перезапуска\n<code>%v</code>", err))
+		},
+	}, ai.StorageCache{S: store})
+	if aiClient.IsEnabled() {
+		slog.Info("ai client enabled", "model_fast", cfg.OpenAIModelFast, "base_url", cfg.OpenAIBaseURL)
+	}
+
 	ntf := notifier.NewTelegramNotifier(bot, store)
 	monitors := []monitor.Monitor{
-		monitor.NewSteamNewsMonitor(cfg.SteamNewsURL),
-		monitor.NewAXSMonitor(cfg.AXSHubURL, cfg.FlareSolverrURL, fetcher.Fetch),
+		monitor.NewSteamNewsMonitor(cfg.SteamNewsURL, aiClient, store),
+		monitor.NewAXSMonitor(cfg.AXSHubURL, cfg.FlareSolverrURL, fetcher.Fetch, aiClient, store, cfg.AXSDiffEnabled, func(text string) {
+			if cfg.AdminChatID == 0 {
+				return
+			}
+			sendDirect(bot, cfg.AdminChatID, text)
+		}),
 		monitor.NewRedditMonitor(),
+	}
+	if cfg.CNMonitorEnabled && aiClient.IsEnabled() {
+		monitors = append(monitors, monitor.NewCNDotaMonitor(cfg.CNNewsURL, cfg.FlareSolverrURL, fetcher.Fetch, aiClient, store, func(text string) {
+			if cfg.AdminChatID == 0 {
+				return
+			}
+			sendDirect(bot, cfg.AdminChatID, text)
+		}))
 	}
 
 	st := newAppState()
@@ -339,7 +377,7 @@ func main() {
 	var lastCheck sync.Map
 
 	go runPolling(ctx, cfg, monitors, ntf, store, st, adminFn, &checkMu)
-	go runBotCommands(ctx, bot, cfg, store, monitors, ntf, st, adminFn, &checkMu, &lastCheck, flightsCache, fst, yuanCache, weatherCache)
+	go runBotCommands(ctx, bot, cfg, store, monitors, ntf, st, adminFn, &checkMu, &lastCheck, flightsCache, fst, yuanCache, weatherCache, aiClient)
 	go func() {
 		ticker := time.NewTicker(30 * time.Minute)
 		defer ticker.Stop()
@@ -480,6 +518,7 @@ func runBotCommands(
 	fst *flightState,
 	yuanCache *yuan.Cache,
 	weatherCache *weather.Cache,
+	aiClient ai.Client,
 ) {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 30
@@ -500,7 +539,7 @@ func runBotCommands(
 			}
 			if update.Message.IsCommand() {
 				fst.clearPending(update.Message.Chat.ID)
-				handleCommand(update.Message, bot, cfg, store, monitors, ntf, st, adminFn, checkMu, lastCheck, flightsCache, yuanCache, weatherCache)
+				handleCommand(update.Message, bot, cfg, store, monitors, ntf, st, adminFn, checkMu, lastCheck, flightsCache, yuanCache, weatherCache, aiClient)
 				continue
 			}
 			go handleText(update.Message, bot, flightsCache, fst)
@@ -522,6 +561,7 @@ func handleCommand(
 	flightsCache *flights.Cache,
 	yuanCache *yuan.Cache,
 	weatherCache *weather.Cache,
+	aiClient ai.Client,
 ) {
 	chatID := msg.Chat.ID
 	username := msg.From.UserName
@@ -602,6 +642,13 @@ func handleCommand(
 
 	case "faq":
 		go sendFaq(bot, chatID)
+		return
+
+	case "aitest":
+		if !isAdmin {
+			return
+		}
+		handleAITest(msg, bot, cfg, store, aiClient)
 		return
 
 	default:
@@ -970,6 +1017,11 @@ func sendFaq(bot *tgbotapi.BotAPI, chatID int64) {
 			"он смотрит на AXS каждые пять минут.\n" +
 			"читает Valve раньше реддита.\n" +
 			"видит очередь до того как она дойдёт до тебя.",
+
+		"<b>и он видит шире.</b>\n" +
+			"если valve намекнёт между строк — он поймёт.\n" +
+			"если страница axs зашевелится в коде — он услышит.\n" +
+			"если 国际邀请赛 появится в шанхайских новостях — он переведёт.",
 
 		"▸ когда ворота в шанхай откроются — здесь загорится свет.\n" +
 			"<b>ты увидишь его первым.</b>",

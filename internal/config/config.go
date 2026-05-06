@@ -23,6 +23,18 @@ type Config struct {
 	TravelpayoutsMarker string
 	FlightsOrigins      []string
 	FlightsPollMin      int
+
+	OpenAIKey         string
+	OpenAIBaseURL     string
+	OpenAIModelFast   string
+	OpenAIModelSmart  string
+	OpenAITimeoutSec  int
+	OpenAIMaxRetries  int
+	AICacheTTLHours   int
+
+	CNMonitorEnabled bool
+	CNNewsURL        string
+	AXSDiffEnabled   bool
 }
 
 func Load() (*Config, error) {
@@ -63,6 +75,21 @@ func Load() (*Config, error) {
 	if cfg.FlightsPollMin < 10 {
 		cfg.FlightsPollMin = 30
 	}
+
+	cfg.OpenAIKey = os.Getenv("OPENAI_API_KEY")
+	cfg.OpenAIBaseURL = getEnvOrDefault("OPENAI_BASE_URL", "https://api.openai.com/v1")
+	cfg.OpenAIModelFast = getEnvOrDefault("OPENAI_MODEL_FAST", "gpt-4o-mini")
+	cfg.OpenAIModelSmart = getEnvOrDefault("OPENAI_MODEL_SMART", "gpt-4o")
+	cfg.OpenAITimeoutSec, _ = strconv.Atoi(getEnvOrDefault("OPENAI_TIMEOUT_S", "20"))
+	if cfg.OpenAITimeoutSec < 5 {
+		cfg.OpenAITimeoutSec = 20
+	}
+	cfg.OpenAIMaxRetries, _ = strconv.Atoi(getEnvOrDefault("OPENAI_MAX_RETRIES", "1"))
+	cfg.AICacheTTLHours, _ = strconv.Atoi(getEnvOrDefault("AI_CACHE_TTL_HOURS", "720"))
+
+	cfg.CNMonitorEnabled = strings.EqualFold(os.Getenv("CN_MONITOR_ENABLED"), "true")
+	cfg.CNNewsURL = getEnvOrDefault("CN_NEWS_URL", "https://www.dota2.com.cn/news/index.htm")
+	cfg.AXSDiffEnabled = strings.EqualFold(os.Getenv("AXS_DIFF_ENABLED"), "true")
 
 	if err := cfg.validate(); err != nil {
 		return nil, err

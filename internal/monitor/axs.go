@@ -1,12 +1,24 @@
 package monitor
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/artem/dotaticketwatch/internal/ai"
 )
+
+type axsStore interface {
+	AIStateGet(key string) ([]byte, bool)
+	AIStateSet(key string, value []byte) error
+}
+
+const axsSnapshotKey = "axs_snapshot"
 
 var axsNextDataRegex = regexp.MustCompile(`<script id="__NEXT_DATA__" type="application/json">([\s\S]*?)</script>`)
 var axsEventURLRegex = regexp.MustCompile(`/events/(\d{5,8})/`)
@@ -66,24 +78,101 @@ type AXSMonitor struct {
 	hubURL          string
 	flareSolverrURL string
 	fetchFn         func(url, flareSolverrURL string) (string, error)
+	aiClient        ai.Client
+	store           axsStore
+	diffEnabled     bool
+	adminFn         func(string)
 }
 
-func NewAXSMonitor(hubURL, flareSolverrURL string, fetchFn func(string, string) (string, error)) *AXSMonitor {
+func NewAXSMonitor(hubURL, flareSolverrURL string, fetchFn func(string, string) (string, error), aiClient ai.Client, store axsStore, diffEnabled bool, adminFn func(string)) *AXSMonitor {
 	return &AXSMonitor{
 		hubURL:          hubURL,
 		flareSolverrURL: flareSolverrURL,
 		fetchFn:         fetchFn,
+		aiClient:        aiClient,
+		store:           store,
+		diffEnabled:     diffEnabled,
+		adminFn:         adminFn,
 	}
 }
 
 func (m *AXSMonitor) Name() string { return "AXS" }
+
+func (m *AXSMonitor) HubURL() string { return m.hubURL }
+
+func (m *AXSMonitor) FetchHTML() (string, error) {
+	return m.fetchFn(m.hubURL, m.flareSolverrURL)
+}
 
 func (m *AXSMonitor) Check() ([]Event, error) {
 	html, err := m.fetchFn(m.hubURL, m.flareSolverrURL)
 	if err != nil {
 		return nil, fmt.Errorf("axs fetch: %w", err)
 	}
-	return extractAXSEvents(html)
+	events, parseErr := extractAXSEvents(html)
+
+	if m.diffEnabled && m.aiClient != nil && m.aiClient.IsEnabled() && m.store != nil {
+		m.runDiff(html)
+	}
+
+	if parseErr == nil && len(events) > 0 {
+		return events, nil
+	}
+	if m.aiClient != nil && m.aiClient.IsEnabled() {
+		aiEvents, aiErr := ParseAXSWithAI(context.Background(), m.aiClient, html)
+		if aiErr == nil && len(aiEvents) > 0 {
+			slog.Info("axs ai-fallback hit", "count", len(aiEvents))
+			return aiEvents, nil
+		}
+	}
+	return events, parseErr
+}
+
+func (m *AXSMonitor) runDiff(html string) {
+	pruned, err := pruneAXSSnapshot(html)
+	if err != nil {
+		return
+	}
+	prev, ok := m.store.AIStateGet(axsSnapshotKey)
+	_ = m.store.AIStateSet(axsSnapshotKey, pruned)
+	if !ok {
+		return
+	}
+	if bytes.Equal(prev, pruned) {
+		return
+	}
+	signal, err := AnalyzeAXSDiff(context.Background(), m.aiClient, string(prev), string(pruned))
+	if err != nil {
+		slog.Warn("axs diff ai failed", "err", err)
+		return
+	}
+	if signal.IsPreSaleSignal && signal.Confidence >= 0.7 && m.adminFn != nil {
+		var sb strings.Builder
+		sb.WriteString("▸ <b>AXS diff</b> · возможный сигнал\n")
+		sb.WriteString(fmt.Sprintf("<i>%s</i>\n", signal.Summary))
+		for _, ch := range signal.Changes {
+			sb.WriteString(fmt.Sprintf("• %s\n", ch))
+		}
+		sb.WriteString(fmt.Sprintf("<code>confidence %.2f</code>", signal.Confidence))
+		m.adminFn(sb.String())
+	}
+}
+
+func pruneAXSSnapshot(html string) ([]byte, error) {
+	nd, err := parseNextData(html)
+	if err != nil || nd == nil {
+		return nil, fmt.Errorf("no __NEXT_DATA__")
+	}
+	pruned := struct {
+		PerformerEvents any `json:"performerEvents"`
+		TeamUpcoming    any `json:"teamUpcoming"`
+		Discovery       any `json:"discovery"`
+	}{
+		PerformerEvents: nd.Props.PageProps.PerformerEventsData,
+		TeamUpcoming:    nd.Props.PageProps.TeamUpcomingEventData,
+		Discovery:       nd.Props.PageProps.DiscoveryPerformerData,
+	}
+	return json.Marshal(pruned)
 }
 
 func looksLikeAXS(html string) bool {

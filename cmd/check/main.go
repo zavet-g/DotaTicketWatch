@@ -94,7 +94,7 @@ func checkStorage() error {
 }
 
 func checkSteamNews() error {
-	m := monitor.NewSteamNewsMonitor(steamNewsURL)
+	m := monitor.NewSteamNewsMonitor(steamNewsURL, nil, nil)
 	events, err := m.Check()
 	if err != nil {
 		return err
@@ -146,7 +146,7 @@ func checkAXSCascade() error {
 }
 
 func checkAXSMonitor() error {
-	m := monitor.NewAXSMonitor(axsHubURL, flareSolverrURL, fetcher.Fetch)
+	m := monitor.NewAXSMonitor(axsHubURL, flareSolverrURL, fetcher.Fetch, nil, nil, false, nil)
 	events, err := m.Check()
 	if err != nil {
 		return err

@@ -195,7 +195,7 @@ func TestAXSMonitor_Check_StatelessReturnsEveryCall(t *testing.T) {
 	html := makeNextDataHTML([]axsEventItem{item}, nil, nil)
 
 	mockFetch := func(url, _ string) (string, error) { return html, nil }
-	m := NewAXSMonitor("https://axs.com/hub", "", mockFetch)
+	m := NewAXSMonitor("https://axs.com/hub", "", mockFetch, nil, nil, false, nil)
 
 	for call := 1; call <= 3; call++ {
 		events, err := m.Check()
@@ -215,7 +215,7 @@ func TestAXSMonitor_Check_FetchError(t *testing.T) {
 	mockFetch := func(url, _ string) (string, error) {
 		return "", fmt.Errorf("cloudflare blocked")
 	}
-	m := NewAXSMonitor("https://axs.com/hub", "", mockFetch)
+	m := NewAXSMonitor("https://axs.com/hub", "", mockFetch, nil, nil, false, nil)
 	_, err := m.Check()
 	if err == nil {
 		t.Error("expected error when fetch fails, got nil")
@@ -226,7 +226,7 @@ func TestAXSMonitor_Check_NoEvents(t *testing.T) {
 	mockFetch := func(url, _ string) (string, error) {
 		return makeNextDataHTML(nil, nil, nil), nil
 	}
-	m := NewAXSMonitor("https://axs.com/hub", "", mockFetch)
+	m := NewAXSMonitor("https://axs.com/hub", "", mockFetch, nil, nil, false, nil)
 	events, err := m.Check()
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

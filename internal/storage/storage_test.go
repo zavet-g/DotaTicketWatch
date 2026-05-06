@@ -1,8 +1,10 @@
 package storage
 
 import (
+	"bytes"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestStorage(t *testing.T) {
@@ -59,6 +61,68 @@ func TestStorage(t *testing.T) {
 		}
 		if s.AlreadyNotified("event-456") {
 			t.Error("different event should not be marked")
+		}
+	})
+
+	t.Run("ai_classified", func(t *testing.T) {
+		if s.AlreadyClassified("steam:abc") {
+			t.Error("not classified initially")
+		}
+		if err := s.MarkClassified("steam:abc"); err != nil {
+			t.Fatalf("MarkClassified: %v", err)
+		}
+		if !s.AlreadyClassified("steam:abc") {
+			t.Error("should be classified after mark")
+		}
+		if s.AlreadyClassified("steam:xyz") {
+			t.Error("different key should not be classified")
+		}
+	})
+
+	t.Run("ai_cache", func(t *testing.T) {
+		if _, ok := s.AICacheGet("k1"); ok {
+			t.Error("empty cache should miss")
+		}
+		val := []byte(`{"a":1}`)
+		if err := s.AICacheSet("k1", val, time.Hour); err != nil {
+			t.Fatalf("AICacheSet: %v", err)
+		}
+		got, ok := s.AICacheGet("k1")
+		if !ok {
+			t.Fatal("should hit after set")
+		}
+		if !bytes.Equal(got, val) {
+			t.Errorf("got %s, want %s", got, val)
+		}
+
+		if err := s.AICacheSet("k2", []byte("expired"), -time.Second); err != nil {
+			t.Fatalf("AICacheSet: %v", err)
+		}
+		if _, ok := s.AICacheGet("k2"); ok {
+			t.Error("expired entry should miss")
+		}
+	})
+
+	t.Run("ai_state", func(t *testing.T) {
+		if _, ok := s.AIStateGet("snap"); ok {
+			t.Error("empty state should miss")
+		}
+		if err := s.AIStateSet("snap", []byte("hello")); err != nil {
+			t.Fatalf("AIStateSet: %v", err)
+		}
+		got, ok := s.AIStateGet("snap")
+		if !ok {
+			t.Fatal("should hit after set")
+		}
+		if string(got) != "hello" {
+			t.Errorf("got %s", got)
+		}
+		if err := s.AIStateSet("snap", []byte("world")); err != nil {
+			t.Fatalf("AIStateSet: %v", err)
+		}
+		got, _ = s.AIStateGet("snap")
+		if string(got) != "world" {
+			t.Errorf("overwrite failed: %s", got)
 		}
 	})
 }
