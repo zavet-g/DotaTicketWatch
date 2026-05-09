@@ -115,7 +115,7 @@ func runAXS(cfg *config.Config, aiClient ai.Client, broken bool) string {
 
 	keywordEvents, _ := monitor.ExtractAXSEventsExported(html)
 	start := time.Now()
-	aiEvents, aiErr := monitor.ParseAXSWithAI(context.Background(), aiClient, html)
+	aiEvents, aiErr := monitor.ParseAXSWithAI(context.Background(), aiClient, html, monitor.HubTeamIDFromURL(cfg.AXSHubURL))
 	dt := time.Since(start).Round(time.Millisecond)
 
 	var sb strings.Builder

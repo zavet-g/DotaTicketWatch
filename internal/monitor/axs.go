@@ -22,6 +22,7 @@ const axsSnapshotKey = "axs_snapshot"
 
 var axsNextDataRegex = regexp.MustCompile(`<script id="__NEXT_DATA__" type="application/json">([\s\S]*?)</script>`)
 var axsEventURLRegex = regexp.MustCompile(`/events/(\d{5,8})/`)
+var axsTeamIDRegex = regexp.MustCompile(`/teams/(\d+)/`)
 
 var axsQueueItPatterns = []string{
 	"queueit-overlay",
@@ -76,6 +77,7 @@ type axsEventItem struct {
 
 type AXSMonitor struct {
 	hubURL          string
+	hubTeamID       string
 	flareSolverrURL string
 	fetchFn         func(url, flareSolverrURL string) (string, error)
 	aiClient        ai.Client
@@ -85,8 +87,13 @@ type AXSMonitor struct {
 }
 
 func NewAXSMonitor(hubURL, flareSolverrURL string, fetchFn func(string, string) (string, error), aiClient ai.Client, store axsStore, diffEnabled bool, adminFn func(string)) *AXSMonitor {
+	teamID := ""
+	if mm := axsTeamIDRegex.FindStringSubmatch(hubURL); len(mm) == 2 {
+		teamID = mm[1]
+	}
 	return &AXSMonitor{
 		hubURL:          hubURL,
+		hubTeamID:       teamID,
 		flareSolverrURL: flareSolverrURL,
 		fetchFn:         fetchFn,
 		aiClient:        aiClient,
@@ -97,6 +104,13 @@ func NewAXSMonitor(hubURL, flareSolverrURL string, fetchFn func(string, string) 
 }
 
 func (m *AXSMonitor) Name() string { return "AXS" }
+
+func HubTeamIDFromURL(hubURL string) string {
+	if mm := axsTeamIDRegex.FindStringSubmatch(hubURL); len(mm) == 2 {
+		return mm[1]
+	}
+	return ""
+}
 
 func (m *AXSMonitor) HubURL() string { return m.hubURL }
 
@@ -119,7 +133,7 @@ func (m *AXSMonitor) Check() ([]Event, error) {
 		return events, nil
 	}
 	if m.aiClient != nil && m.aiClient.IsEnabled() {
-		aiEvents, aiErr := ParseAXSWithAI(context.Background(), m.aiClient, html)
+		aiEvents, aiErr := ParseAXSWithAI(context.Background(), m.aiClient, html, m.hubTeamID)
 		if aiErr == nil && len(aiEvents) > 0 {
 			slog.Info("axs ai-fallback hit", "count", len(aiEvents))
 			return aiEvents, nil

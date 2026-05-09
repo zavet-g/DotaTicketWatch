@@ -31,7 +31,7 @@ type aiAXSResponse struct {
 	Events []aiAXSEvent `json:"events"`
 }
 
-func ParseAXSWithAI(ctx context.Context, c ai.Client, html string) ([]Event, error) {
+func ParseAXSWithAI(ctx context.Context, c ai.Client, html, excludeID string) ([]Event, error) {
 	if c == nil || !c.IsEnabled() {
 		return nil, ai.ErrAINotEnabled
 	}
@@ -56,6 +56,9 @@ func ParseAXSWithAI(ctx context.Context, c ai.Client, html string) ([]Event, err
 	for _, e := range parsed.Events {
 		id := strings.TrimSpace(e.ID)
 		if !axsIDRegex.MatchString(id) || seen[id] {
+			continue
+		}
+		if id == excludeID {
 			continue
 		}
 		seen[id] = true
