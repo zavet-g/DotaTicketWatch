@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -17,10 +18,27 @@ type openaiClient struct {
 	cache               Cache
 	consecutiveFailures atomic.Int32
 	disabled            atomic.Bool
+	disabledAtNanos     atomic.Int64
+	hardDisabled        atomic.Bool
 }
 
+const cooldownAfterDisable = 30 * time.Minute
+
 func (c *openaiClient) IsEnabled() bool {
-	return !c.disabled.Load()
+	if !c.disabled.Load() {
+		return true
+	}
+	if c.hardDisabled.Load() {
+		return false
+	}
+	since := time.Since(time.Unix(0, c.disabledAtNanos.Load()))
+	if since < cooldownAfterDisable {
+		return false
+	}
+	c.consecutiveFailures.Store(0)
+	c.disabled.Store(false)
+	slog.Info("ai: cooldown passed, re-enabled", "after", since.Round(time.Second))
+	return true
 }
 
 func (c *openaiClient) ModelFast() string  { return c.cfg.ModelFast }
@@ -89,14 +107,23 @@ func (c *openaiClient) Complete(ctx context.Context, req CompleteRequest) (*Comp
 	resp, err := c.do(ctx, req)
 	if err != nil {
 		fails := c.consecutiveFailures.Add(1)
+		slog.Warn("ai: request failed", "err", err, "fails", fails, "model", req.Model)
 		if fails >= consecutiveFailuresLimit {
 			c.disabled.Store(true)
-			slog.Warn("ai: too many consecutive failures, disabled", "fails", fails)
+			c.disabledAtNanos.Store(time.Now().UnixNano())
+			if errors.Is(err, ErrUnauthorized) {
+				c.hardDisabled.Store(true)
+			}
+			slog.Warn("ai: too many consecutive failures, disabled", "fails", fails, "cooldown", cooldownAfterDisable)
 			if c.cfg.OnFailureRun != nil {
 				c.cfg.OnFailureRun(err)
 			}
 		}
 		return nil, err
+	}
+	if c.disabled.Load() {
+		c.disabled.Store(false)
+		slog.Info("ai: recovered after success")
 	}
 	c.consecutiveFailures.Store(0)
 	resp.Latency = time.Since(start)
