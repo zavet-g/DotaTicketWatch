@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math/rand/v2"
@@ -318,7 +319,14 @@ func main() {
 		MaxRetries: cfg.OpenAIMaxRetries,
 		CacheTTL:   time.Duration(cfg.AICacheTTLHours) * time.Hour,
 		OnFailureRun: func(err error) {
-			adminBootstrap(fmt.Sprintf("× <b>ии</b> · отключён до перезапуска\n<code>%v</code>", err))
+			switch {
+			case errors.Is(err, ai.ErrInsufficientQuota):
+				adminBootstrap("× <b>ии</b> · квота openai исчерпана · пополни баланс на platform.openai.com")
+			case errors.Is(err, ai.ErrUnauthorized):
+				adminBootstrap("× <b>ии</b> · ключ openai недействителен · проверь OPENAI_API_KEY")
+			default:
+				adminBootstrap(fmt.Sprintf("× <b>ии</b> · отключён на 30мин\n<code>%v</code>", err))
+			}
 		},
 	}, ai.StorageCache{S: store})
 	if aiClient.IsEnabled() {
