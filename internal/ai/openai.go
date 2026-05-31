@@ -20,9 +20,25 @@ type openaiClient struct {
 	disabled            atomic.Bool
 	disabledAtNanos     atomic.Int64
 	hardDisabled        atomic.Bool
+	notified            atomic.Bool
+	disableStreak       atomic.Int32
 }
 
-const cooldownAfterDisable = 30 * time.Minute
+const (
+	cooldownBase = 30 * time.Minute
+	cooldownMax  = 6 * time.Hour
+)
+
+func cooldownFor(streak int32) time.Duration {
+	d := cooldownBase
+	for i := int32(1); i < streak; i++ {
+		d *= 2
+		if d >= cooldownMax {
+			return cooldownMax
+		}
+	}
+	return d
+}
 
 func (c *openaiClient) IsEnabled() bool {
 	if !c.disabled.Load() {
@@ -32,7 +48,7 @@ func (c *openaiClient) IsEnabled() bool {
 		return false
 	}
 	since := time.Since(time.Unix(0, c.disabledAtNanos.Load()))
-	if since < cooldownAfterDisable {
+	if since < cooldownFor(c.disableStreak.Load()) {
 		return false
 	}
 	c.consecutiveFailures.Store(0)
@@ -110,22 +126,27 @@ func (c *openaiClient) Complete(ctx context.Context, req CompleteRequest) (*Comp
 		slog.Warn("ai: request failed", "err", err, "fails", fails, "model", req.Model)
 		hardFatal := errors.Is(err, ErrUnauthorized) || errors.Is(err, ErrInsufficientQuota)
 		if hardFatal || fails >= consecutiveFailuresLimit {
-			alreadyDisabled := c.disabled.Swap(true)
+			c.disabled.Store(true)
 			c.disabledAtNanos.Store(time.Now().UnixNano())
+			streak := c.disableStreak.Add(1)
 			if hardFatal {
 				c.hardDisabled.Store(true)
 			}
-			if !alreadyDisabled {
+			if !c.notified.Swap(true) {
 				slog.Warn("ai: disabled", "fails", fails, "hard", hardFatal, "err", err)
 				if c.cfg.OnFailureRun != nil {
 					c.cfg.OnFailureRun(err)
 				}
+			} else {
+				slog.Warn("ai: re-disabled, alert suppressed", "streak", streak, "cooldown", cooldownFor(streak), "err", err)
 			}
 		}
 		return nil, err
 	}
 	if c.disabled.Load() {
 		c.disabled.Store(false)
+		c.notified.Store(false)
+		c.disableStreak.Store(0)
 		slog.Info("ai: recovered after success")
 	}
 	c.consecutiveFailures.Store(0)

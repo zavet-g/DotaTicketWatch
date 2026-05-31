@@ -114,6 +114,39 @@ func TestOpenAIClientUnauthorized(t *testing.T) {
 	}
 }
 
+func TestOpenAIClientAlertsOnceUntilRecovery(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(502)
+	}))
+	defer srv.Close()
+
+	var alerts int
+	c := NewClient(Config{
+		APIKey:       "k",
+		BaseURL:      srv.URL,
+		Timeout:      2 * time.Second,
+		OnFailureRun: func(error) { alerts++ },
+	}, nil).(*openaiClient)
+
+	for i := 0; i < consecutiveFailuresLimit; i++ {
+		_, _ = c.Complete(context.Background(), CompleteRequest{User: "x"})
+	}
+	if alerts != 1 {
+		t.Fatalf("first disable: want 1 alert, got %d", alerts)
+	}
+
+	c.disabledAtNanos.Store(time.Now().Add(-7 * time.Hour).UnixNano())
+	if !c.IsEnabled() {
+		t.Fatal("cooldown should have passed")
+	}
+	for i := 0; i < consecutiveFailuresLimit; i++ {
+		_, _ = c.Complete(context.Background(), CompleteRequest{User: "x"})
+	}
+	if alerts != 1 {
+		t.Fatalf("re-disable without recovery must not re-alert, got %d", alerts)
+	}
+}
+
 func TestOpenAIClientDisablesAfterFailures(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(500)
