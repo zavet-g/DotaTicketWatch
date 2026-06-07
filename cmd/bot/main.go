@@ -384,7 +384,12 @@ func main() {
 	var checkMu sync.Mutex
 	var lastCheck sync.Map
 
-	go runPolling(ctx, cfg, monitors, ntf, store, st, adminFn, &checkMu)
+	if cfg.MonitorEnabled {
+		go runPolling(ctx, cfg, monitors, ntf, store, st, adminFn, &checkMu)
+	} else {
+		slog.Info("monitoring disabled, heartbeat only")
+		go runHeartbeat(ctx, cfg.DBPath)
+	}
 	go runBotCommands(ctx, bot, cfg, store, monitors, ntf, st, adminFn, &checkMu, &lastCheck, flightsCache, fst, yuanCache, weatherCache, aiClient)
 	go func() {
 		ticker := time.NewTicker(30 * time.Minute)
@@ -476,6 +481,21 @@ func checkAll(
 	mu.Lock()
 	defer mu.Unlock()
 	runChecks(monitors, ntf, store, st, adminFn, nil)
+}
+
+func runHeartbeat(ctx context.Context, dbPath string) {
+	heartbeatPath := filepath.Join(filepath.Dir(dbPath), "heartbeat")
+	_ = os.WriteFile(heartbeatPath, nil, 0o644)
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			_ = os.WriteFile(heartbeatPath, nil, 0o644)
+		}
+	}
 }
 
 func runPolling(

@@ -35,6 +35,8 @@ type Config struct {
 	CNMonitorEnabled bool
 	CNNewsURL        string
 	AXSDiffEnabled   bool
+
+	MonitorEnabled bool
 }
 
 func Load() (*Config, error) {
@@ -90,6 +92,7 @@ func Load() (*Config, error) {
 	cfg.CNMonitorEnabled = strings.EqualFold(os.Getenv("CN_MONITOR_ENABLED"), "true")
 	cfg.CNNewsURL = getEnvOrDefault("CN_NEWS_URL", "https://www.dota2.com.cn/news/index.htm")
 	cfg.AXSDiffEnabled = strings.EqualFold(os.Getenv("AXS_DIFF_ENABLED"), "true")
+	cfg.MonitorEnabled = !strings.EqualFold(os.Getenv("MONITOR_ENABLED"), "false")
 
 	if err := cfg.validate(); err != nil {
 		return nil, err
